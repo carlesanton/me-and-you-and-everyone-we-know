@@ -2,6 +2,7 @@ import {FPS} from './lib/JSGenerativeArtTools/fps/fps.js';
 import {scaleCanvasToFit, prepareP5Js} from './lib/JSGenerativeArtTools/utils.js';
 import {intialize_toolbar} from './toolbar.js';
 import { Recorder } from './lib/JSGenerativeArtTools/record/record.js';
+import {PixelCam} from './lib/JSGenerativeArtTools/pixelCam/pixelCam.js';
 
 // The desired artwork size in which everything is pixel perfect.
 // Let the canvas resize itself to fit the screen in "scaleCanvasToFit()" function.
@@ -47,6 +48,8 @@ const imgFiles = [
 export let fps;
 export let recorder;
 let inputs;
+
+export let pixelCam;
 let camera;
 
 function preload() {
@@ -59,6 +62,8 @@ function preload() {
     () => { image_loaded_successfuly = true; },
     () => { image_loaded_successfuly = false; }
   )
+
+  pixelCam = new PixelCam();
 }
 
 function setup() {
@@ -84,6 +89,8 @@ function setup() {
 
   // Set pixelDensity
   canvas.pixelDensity(pixel_density);
+  
+  pixelCam.initializeShader()
 
   // Apply the loaded font
   textFont(myFont);
@@ -131,6 +138,8 @@ function draw_steps(){
   scale(-1, 1);
   image(camera, 0-width/2, 0-height/2, width, height)
   color_buffer.end();
+
+  color_buffer = pixelCam.pixelCamGPU(color_buffer)
 
   image(color_buffer, 0-width/2, 0-height/2, width, height)
 }
