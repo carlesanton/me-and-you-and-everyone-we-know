@@ -26,7 +26,6 @@ let artworkWidth;
 let artworkHeight;
 let workingImageWidth;
 let workingImageHeight;
-let pixelSize;
 export let artwork_seed; // -1 used for random seeds, if set to a positive integer the number is used
 
 // To check if user loaded an image or default one is loaded
@@ -176,7 +175,6 @@ export function applyUIChanges(){
 function updateArtworkSettings() {
   artworkWidth = parseInt(MainInputs['artworkWidth'].value);
   artworkHeight = parseInt(MainInputs['artworkHeight'].value);
-  pixelSize = parseInt(MainInputs['pixelSize'].value);
 }
 
 export function flipSize(){
