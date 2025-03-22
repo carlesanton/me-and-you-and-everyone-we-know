@@ -48,6 +48,7 @@ const imgFiles = [
 export let fps;
 export let recorder;
 let inputs;
+let camera;
 
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
@@ -73,6 +74,11 @@ function setup() {
 
   // Create Canvas
   canvas = createCanvas(artworkWidth, artworkHeight, WEBGL);
+
+  // Create Camera
+  camera = createCapture(VIDEO);
+  camera.size(artworkWidth, artworkHeight);
+  camera.hide();
 
   // Move Canvas to canvas-wrapper div
   canvas.parent("canvas-wrapper")
@@ -126,6 +132,11 @@ function draw() {
 }
 
 function draw_steps(){
+  color_buffer.begin();
+  scale(-1, 1);
+  image(camera, 0-width/2, 0-height/2, width, height)
+  color_buffer.end();
+
   image(color_buffer, 0-width/2, 0-height/2, width, height)
 }
 
