@@ -2,6 +2,7 @@ import {FPS} from './lib/JSGenerativeArtTools/fps/fps.js';
 import {scaleCanvasToFit, prepareP5Js} from './lib/JSGenerativeArtTools/utils.js';
 import {intialize_toolbar} from './toolbar.js';
 import { Recorder } from './lib/JSGenerativeArtTools/record/record.js';
+import {PixelCam} from './lib/JSGenerativeArtTools/pixelCam/pixelCam.js';
 
 // The desired artwork size in which everything is pixel perfect.
 // Let the canvas resize itself to fit the screen in "scaleCanvasToFit()" function.
@@ -26,7 +27,6 @@ let artworkWidth;
 let artworkHeight;
 let workingImageWidth;
 let workingImageHeight;
-let pixelSize;
 export let artwork_seed; // -1 used for random seeds, if set to a positive integer the number is used
 
 // To check if user loaded an image or default one is loaded
@@ -49,6 +49,9 @@ export let fps;
 export let recorder;
 let inputs;
 
+export let pixelCam;
+let camera;
+
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
@@ -59,6 +62,8 @@ function preload() {
     () => { image_loaded_successfuly = true; },
     () => { image_loaded_successfuly = false; }
   )
+
+  pixelCam = new PixelCam();
 }
 
 function setup() {
@@ -74,11 +79,18 @@ function setup() {
   // Create Canvas
   canvas = createCanvas(artworkWidth, artworkHeight, WEBGL);
 
+  // Create Camera
+  camera = createCapture(VIDEO);
+  camera.size(artworkWidth, artworkHeight);
+  camera.hide();
+
   // Move Canvas to canvas-wrapper div
   canvas.parent("canvas-wrapper")
 
   // Set pixelDensity
   canvas.pixelDensity(pixel_density);
+  
+  pixelCam.initializeShader()
 
   // Apply the loaded font
   textFont(myFont);
@@ -105,10 +117,6 @@ function initializeCanvas(input_image){
   color_buffer = createFramebuffer(color_buffer_otions)
   interface_color_buffer = createFramebuffer({width: artworkWidth, height: artworkHeight})
 
-  color_buffer.begin();
-  image(input_image, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
-  color_buffer.end()
-
   scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
 
   recorder.setFilenameSufix('seed-'+ artwork_seed);
@@ -126,6 +134,13 @@ function draw() {
 }
 
 function draw_steps(){
+  color_buffer.begin();
+  scale(-1, 1);
+  image(camera, 0-width/2, 0-height/2, width, height)
+  color_buffer.end();
+
+  color_buffer = pixelCam.pixelCamGPU(color_buffer)
+
   image(color_buffer, 0-width/2, 0-height/2, width, height)
 }
 
@@ -165,7 +180,6 @@ export function applyUIChanges(){
 function updateArtworkSettings() {
   artworkWidth = parseInt(MainInputs['artworkWidth'].value);
   artworkHeight = parseInt(MainInputs['artworkHeight'].value);
-  pixelSize = parseInt(MainInputs['pixelSize'].value);
 }
 
 export function flipSize(){

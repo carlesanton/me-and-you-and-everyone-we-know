@@ -18,6 +18,7 @@ import {
     load_user_image,
     fps,
     recorder,
+    pixelCam,
 } from './sketch.js'
 
 function createArtworkSettingsCard() {
@@ -89,6 +90,12 @@ function intialize_toolbar(){
     toolbar.appendChild(document.createElement('br'));
 
     elements_dict['mainInputs'] = MainInputs;
+
+    // Pixel Cam
+    var pixelCamInputs = pixelCam.createPixelCalSettings()
+    toolbar.appendChild(pixelCamInputs['main-toolbar']);
+    toolbar.appendChild(document.createElement('br'));
+    elements_dict['pixelCamInputs'] = pixelCamInputs;
 
     // Recorder UI
     var recorderInputs = recorder.createSettingsCard();
