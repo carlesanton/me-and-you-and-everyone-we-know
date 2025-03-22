@@ -110,10 +110,6 @@ function initializeCanvas(input_image){
   color_buffer = createFramebuffer(color_buffer_otions)
   interface_color_buffer = createFramebuffer({width: artworkWidth, height: artworkHeight})
 
-  color_buffer.begin();
-  image(input_image, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
-  color_buffer.end()
-
   scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
 
   recorder.setFilenameSufix('seed-'+ artwork_seed);
