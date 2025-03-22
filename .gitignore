@@ -1,0 +1,27 @@
+# Ignore Images
+*.jpg
+*.jpeg
+*.png
+*.psd
+*.webp
+!/img/*.jpg
+
+# Ignore Combine24objects.json
+Combine24objects*.json
+
+# Ignore Videos
+*.avi
+*.mp4
+*.webm
+
+# Ignore all exports folder
+exports/*
+
+# Ignore .DS_Store
+.DS_Store
+
+# Ignore VSCode settings
+.vscode/*
+
+# Ignore Open Call files (dossiers and pdfs and so on)
+dossiers/*

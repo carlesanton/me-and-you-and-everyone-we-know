@@ -1,0 +1,3 @@
+[submodule "lib/JSGenerativeArtTools"]
+	path = lib/JSGenerativeArtTools
+	url = https://github.com/carlesanton/JSGenerativeArtTools
