@@ -133,7 +133,6 @@ function drawInterface(){
   interface_color_buffer.begin()
   clear()
 
-  console.log('fps.isDisplayEnabled()', fps.isDisplayEnabled())
   if (fps.isDisplayEnabled()) {
     fps.calculateFPS(millis());
     fps.displayFPS(artworkWidth/2, -artworkHeight/2);
