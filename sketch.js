@@ -257,6 +257,20 @@ export function load_user_file(user_file){
   image_loaded_successfuly = true;
 }
 
+function getFileExtension(base64String) {
+  // Extract the MIME type
+  const match = /^data:(.*?);base64,/.exec(base64String);
+  if (!match || match.length < 2) {
+      throw new Error("Invalid base64 string format");
+  }
+
+  const mimeType = match[1]; // e.g., "video/mp4" or "image/jpeg"  
+  // Get the extension from the MIME type
+  const extension = mimeType.split('/')[1];
+
+  return extension;
+}
+
 function display_image_error_message(){
   fill(255, 0, 0);
   textSize(32);
