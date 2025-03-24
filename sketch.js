@@ -257,6 +257,16 @@ export function load_user_file(user_file){
   image_loaded_successfuly = true;
 }
 
+function load_video(video_path) {
+  console.log('video_path', video_path);
+  let video = createVideo(video_path);
+  // video.size(400, 400);
+  video.volume(0);
+  video.loop();
+  video.hide();
+  return video;
+}
+
 function getFileExtension(base64String) {
   // Extract the MIME type
   const match = /^data:(.*?);base64,/.exec(base64String);
