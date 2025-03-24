@@ -149,7 +149,12 @@ function draw() {
 function draw_steps(){
   color_buffer.begin();
   scale(-1, 1);
-  image(camera, 0-width/2, 0-height/2, width, height)
+  if (pixelCam.getUseInputFile()){ // Draw input file if required
+    image(img, 0-width/2, 0-height/2, width, height)
+  }
+  else { // Draw camera otherwise
+    image(camera, 0-width/2, 0-height/2, width, height)
+  }
   color_buffer.end();
 
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
