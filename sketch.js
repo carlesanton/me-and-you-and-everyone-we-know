@@ -43,6 +43,8 @@ let interface_color_buffer;
 
 const imgFiles = [
   'img/1225657.jpg',
+  'img/waterfall.jpg',
+  'img/bw-gradient.avif',
 ]
 
 export let fps;
@@ -55,7 +57,7 @@ let camera;
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
-  var image_path = imgFiles[floor(random(1000000000)%imgFiles.length)]
+  var image_path = imgFiles[1]
   console.log('Loaded image: ', image_path)
   img = loadImage(
     image_path,
