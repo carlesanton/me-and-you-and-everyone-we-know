@@ -31,6 +31,7 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 
 // To check if user loaded an image or default one is loaded
 let loaded_user_image = false;
+const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
 
 const pixel_density = 1;
@@ -245,16 +246,49 @@ export function saveImage() {
   saveCanvas(tmp_buffer, filename, 'png');
 }
 
-export function load_user_image(user_image){
-  loadImage(user_image,
-    (loadedImage)=>{
-      img = loadedImage;
-      initializeCanvas(loadedImage)
-    },
-    () => { image_loaded_successfuly = false; loaded_user_image = true; }
-  );
+export function load_user_file(user_file){
+  const fileExtension = getFileExtension(user_file);
+  console.log('fileExtension', fileExtension)
+  if (videoFormats.includes(fileExtension)) {
+    console.log('Loading video')
+    img = load_video(user_file);
+    user_file_is_video = true;
+  }
+  else {
+    loadImage(user_file,
+      (loadedImage)=>{
+        img = loadedImage;
+        initializeCanvas(loadedImage)
+      },
+      () => { image_loaded_successfuly = false; loaded_user_image = true; }
+    );
+  }
   loaded_user_image = true;
   image_loaded_successfuly = true;
+}
+
+function load_video(video_path) {
+  console.log('video_path', video_path);
+  let video = createVideo(video_path);
+  // video.size(400, 400);
+  video.volume(0);
+  video.loop();
+  video.hide();
+  return video;
+}
+
+function getFileExtension(base64String) {
+  // Extract the MIME type
+  const match = /^data:(.*?);base64,/.exec(base64String);
+  if (!match || match.length < 2) {
+      throw new Error("Invalid base64 string format");
+  }
+
+  const mimeType = match[1]; // e.g., "video/mp4" or "image/jpeg"  
+  // Get the extension from the MIME type
+  const extension = mimeType.split('/')[1];
+
+  return extension;
 }
 
 function display_image_error_message(){
