@@ -95,6 +95,19 @@ function setup() {
   // Apply the loaded font
   textFont(myFont);
 
+  // Define ASCII string
+  let asciiStr = ".,:;i1@tfLCG08";
+
+  // Set color levels and grid size vars depending on ascii string
+  let colorLevels = asciiStr.length;
+  pixelCam.setColorLevels(colorLevels);
+  let gridSideSize = ceil(sqrt(colorLevels));
+  pixelCam.setGridSideSize(gridSideSize);
+
+  // Create and set ascii texture
+  let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
+  pixelCam.setASCIITexture(ascii_texture_buffer);
+
   if (image_loaded_successfuly){
     initializeCanvas(img)
   }
