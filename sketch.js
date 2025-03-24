@@ -245,7 +245,7 @@ export function saveImage() {
   saveCanvas(tmp_buffer, filename, 'png');
 }
 
-export function load_user_image(user_image){
+export function load_user_file(user_file){
   loadImage(user_image,
     (loadedImage)=>{
       img = loadedImage;

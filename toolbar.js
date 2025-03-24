@@ -15,7 +15,7 @@ import {
     applyUIChanges,
     saveImage,
     flipSize,
-    load_user_image,
+    load_user_file,
     fps,
     recorder,
     pixelCam,
@@ -48,7 +48,7 @@ function createArtworkSettingsCard() {
     // Buttons
     const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
     const saveFrameButton = create_button('Save Current Frame', () => { saveImage(); });
-    const loadImage = create_input_image_button(load_user_image, 'Load Image', 'No file chosen', 'Loaded Image: ');
+    const loadImage = create_input_image_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
 
     // FPS, take only body
     var FPSInputs = fps.createFPSSettingsCard();
