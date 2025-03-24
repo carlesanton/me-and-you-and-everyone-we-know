@@ -31,6 +31,7 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 
 // To check if user loaded an image or default one is loaded
 let loaded_user_image = false;
+const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
 
 const pixel_density = 1;
@@ -246,13 +247,22 @@ export function saveImage() {
 }
 
 export function load_user_file(user_file){
-  loadImage(user_image,
-    (loadedImage)=>{
-      img = loadedImage;
-      initializeCanvas(loadedImage)
-    },
-    () => { image_loaded_successfuly = false; loaded_user_image = true; }
-  );
+  const fileExtension = getFileExtension(user_file);
+  console.log('fileExtension', fileExtension)
+  if (videoFormats.includes(fileExtension)) {
+    console.log('Loading video')
+    img = load_video(user_file);
+    user_file_is_video = true;
+  }
+  else {
+    loadImage(user_file,
+      (loadedImage)=>{
+        img = loadedImage;
+        initializeCanvas(loadedImage)
+      },
+      () => { image_loaded_successfuly = false; loaded_user_image = true; }
+    );
+  }
   loaded_user_image = true;
   image_loaded_successfuly = true;
 }
