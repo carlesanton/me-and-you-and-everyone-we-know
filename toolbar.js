@@ -2,7 +2,7 @@ import {
     create_number_input_slider_and_number,
     create_daisyui_expandable_card,
     create_button,
-    create_input_image_button,
+    create_input_file_button,
     turnDaisyUICardIntoBodyWithTitle,
     createSmallBreak,
     create_subtitle,
@@ -48,7 +48,7 @@ function createArtworkSettingsCard() {
     // Buttons
     const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
     const saveFrameButton = create_button('Save Current Frame', () => { saveImage(); });
-    const loadImage = create_input_image_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
+    const loadImage = create_input_file_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
 
     // FPS, take only body
     var FPSInputs = fps.createFPSSettingsCard();
