@@ -43,6 +43,8 @@ let interface_color_buffer;
 
 const imgFiles = [
   'img/1225657.jpg',
+  'img/waterfall.jpg',
+  'img/bw-gradient.avif',
 ]
 
 export let fps;
@@ -55,7 +57,7 @@ let camera;
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
-  var image_path = imgFiles[floor(random(1000000000)%imgFiles.length)]
+  var image_path = imgFiles[1]
   console.log('Loaded image: ', image_path)
   img = loadImage(
     image_path,
@@ -108,6 +110,9 @@ function setup() {
   let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
   pixelCam.setASCIITexture(ascii_texture_buffer);
 
+  // FPS Set Fill Color
+  fps.setFillColor([150, 150, 150]);
+
   if (image_loaded_successfuly){
     initializeCanvas(img)
   }
@@ -149,7 +154,12 @@ function draw() {
 function draw_steps(){
   color_buffer.begin();
   scale(-1, 1);
-  image(camera, 0-width/2, 0-height/2, width, height)
+  if (pixelCam.getUseInputFile()){ // Draw input file if required
+    image(img, 0-width/2, 0-height/2, width, height)
+  }
+  else { // Draw camera otherwise
+    image(camera, 0-width/2, 0-height/2, width, height)
+  }
   color_buffer.end();
 
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
