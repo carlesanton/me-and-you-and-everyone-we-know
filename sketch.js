@@ -108,6 +108,9 @@ function setup() {
   let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
   pixelCam.setASCIITexture(ascii_texture_buffer);
 
+  // FPS Set Fill Color
+  fps.setFillColor([150, 150, 150]);
+
   if (image_loaded_successfuly){
     initializeCanvas(img)
   }
