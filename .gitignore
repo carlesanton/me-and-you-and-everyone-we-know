@@ -13,6 +13,8 @@ Combine24objects*.json
 *.avi
 *.mp4
 *.webm
+img/Videitos Mobil
+
 
 # Ignore all exports folder
 exports/*
