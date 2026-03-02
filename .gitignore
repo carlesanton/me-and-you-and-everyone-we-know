@@ -20,6 +20,9 @@ exports/*
 # Ignore .DS_Store
 .DS_Store
 
+# Ignore zips
+*.zip
+
 # Ignore VSCode settings
 .vscode/*
 
