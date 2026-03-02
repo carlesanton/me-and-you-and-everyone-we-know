@@ -40,9 +40,6 @@ function createArtworkSettingsCard() {
     const height = create_number_input_slider_and_number('artworkHeight', 'Height', defaultArtworkHeight,0, 4000);
     elements_dict['artworkHeight'] = height.getElementsByTagName('input')[0];
 
-    const pixelSize = create_number_input_slider_and_number('pixelSize', 'Pixel Size', defaultPixelSize,1, 100);
-    elements_dict['pixelSize'] = pixelSize.getElementsByTagName('input')[0];
-
     const emptyTitle1 = create_subtitle();
     const emptyTitle2 = create_subtitle();
     // Buttons
@@ -54,8 +51,6 @@ function createArtworkSettingsCard() {
     var FPSInputs = fps.createFPSSettingsCard();
     var FPSInputsBody = turnDaisyUICardIntoBodyWithTitle(FPSInputs['main-toolbar'])
     elements_dict['fpsInputs'] = FPSInputs;
-
-    cardBody.appendChild(pixelSize);
 
     cardBody.appendChild(sizeTitle);
     cardBody.appendChild(width);
