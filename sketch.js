@@ -19,7 +19,7 @@ export const defaultArtworkWidth = 1280;
 export const defaultArtworkHeight = 720;
 export const defaultArtworkSeed = -1;
 export const defaultPixelSize = 4;
-export const defaultFPS = 15;
+export const defaultFPS = 10;
 
 // Variables
 // Main
@@ -48,6 +48,23 @@ const imgFiles = [
   'img/bw-gradient.avif',
 ]
 
+const animationsFramesPathsDict = {
+  0: 'img/mockup/0.png',
+  1: 'img/mockup/1.png',
+  2: 'img/mockup/2.png',
+  3: 'img/mockup/3.png',
+  4: 'img/mockup/4.png',
+  5: 'img/mockup/5.png',
+  6: 'img/mockup/6.png',
+  7: 'img/mockup/7.png',
+  8: 'img/mockup/8.png',
+  9: 'img/mockup/9.png',
+}
+
+let spritesheets = {}; // dict for all the spritesheets in a single texture (grid) {0: image-grid, 1: image-grid, ...}
+let spritesheets_atlas;
+let numberOfFrames = 4;
+
 export let fps;
 export let recorder;
 let inputs;
@@ -67,11 +84,15 @@ function preload() {
   )
 
   pixelCam = new PixelCam();
+
+  spritesheets = loadFrames(animationsFramesPathsDict, () => {console.log('Loaded all spritesheets')})
 }
 
 function setup() {
   recorder = new Recorder()
   fps = new FPS()
+  fps.setFPS(defaultFPS)
+
   inputs = intialize_toolbar();
   MainInputs = inputs.mainInputs;
 
@@ -102,14 +123,25 @@ function setup() {
   let asciiStr = ".,:;i1@tfLCG08";
 
   // Set color levels and grid size vars depending on ascii string
-  let colorLevels = asciiStr.length;
+  // let colorLevels = asciiStr.length;
+  // pixelCam.setColorLevels(colorLevels);
+  // let gridSideSize = ceil(sqrt(colorLevels));
+  // pixelCam.setGridSideSize(gridSideSize);
+
+  // // Create and set ascii texture
+  // let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
+  // pixelCam.setSpritesheetsAtlas(ascii_texture_buffer);
+
+  let colorLevels = Object.keys(spritesheets).length;
   pixelCam.setColorLevels(colorLevels);
   let gridSideSize = ceil(sqrt(colorLevels));
   pixelCam.setGridSideSize(gridSideSize);
 
-  // Create and set ascii texture
-  let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
-  pixelCam.setASCIITexture(ascii_texture_buffer);
+  let frameGridSideSize = Math.ceil(Math.sqrt(numberOfFrames));
+  pixelCam.setFrameGridSideSize(frameGridSideSize);
+  spritesheets_atlas = pixelCam.joinImagesIntoGrid(Object.values(spritesheets));
+  pixelCam.setSpritesheetsAtlas(spritesheets_atlas);
+  pixelCam.setNumberOfFrames(numberOfFrames);
 
   // FPS Set Fill Color
   fps.setFillColor([150, 150, 150]);
@@ -153,15 +185,18 @@ function draw() {
 }
 
 function draw_steps(){
+  clear();
   color_buffer.begin();
-  scale(-1, 1);
   if (pixelCam.getUseInputFile()){ // Draw input file if required
     image(img, 0-width/2, 0-height/2, width, height)
   }
   else { // Draw camera otherwise
+    scale(-1, 1);
     image(camera, 0-width/2, 0-height/2, width, height)
   }
   color_buffer.end();
+
+  pixelCam.increaseFrame();
 
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
 
@@ -252,23 +287,36 @@ export function load_user_file(user_file){
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
     img = load_video(user_file);
-    user_file_is_video = true;
+    pixelCam.setUseInputFile(true);
   }
   else {
+    console.log('Loading Image')
     loadImage(user_file,
       (loadedImage)=>{
         img = loadedImage;
         initializeCanvas(loadedImage)
+        pixelCam.setUseInputFile(true);
       },
-      () => { image_loaded_successfuly = false; loaded_user_image = true; }
+      () => { image_loaded_successfuly = false; loaded_user_image = true; pixelCam.setUseInputFile(false);}
     );
   }
   loaded_user_image = true;
   image_loaded_successfuly = true;
 }
 
+function loadFrames(animationsFramesPathsDict, callback) {
+  console.log('Loading all spritesheets');
+  let loadedImages = {};
+
+  for (let key in animationsFramesPathsDict) {
+    loadedImages[key] = loadImage(animationsFramesPathsDict[key]);
+  }
+  callback(loadedImages);
+
+  return loadedImages;
+}
+
 function load_video(video_path) {
-  console.log('video_path', video_path);
   let video = createVideo(video_path);
   // video.size(400, 400);
   video.volume(0);
