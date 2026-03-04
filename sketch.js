@@ -33,6 +33,7 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 let loaded_user_image = false;
 const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
+let useInputFile = false;
 
 const pixel_density = 1;
 let canvas;
