@@ -11,7 +11,7 @@ import {PixelCam} from './lib/JSGenerativeArtTools/pixelCam/pixelCam.js';
 // If you target size is bigger you can reduce that value. e.g. "pixelDensity(2)".
 // Inputs
 // Main
-let MainInputs
+let SizeInputs
 
 // Defaults
 // Main
