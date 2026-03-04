@@ -43,11 +43,7 @@ let myFont;
 let color_buffer;
 let interface_color_buffer;
 
-const imgFiles = [
-  'img/1225657.jpg',
-  'img/waterfall.jpg',
-  'img/bw-gradient.avif',
-]
+const imgFile = 'img/waterfall.jpg'
 
 const animationsFramesPathsDict = {
   0: 'img/mockup/0.png',
@@ -61,6 +57,8 @@ const animationsFramesPathsDict = {
   8: 'img/mockup/8.png',
   9: 'img/mockup/9.png',
 }
+
+let current_image_path;
 
 let spritesheets = {}; // dict for all the spritesheets in a single texture (grid) {0: image-grid, 1: image-grid, ...}
 let spritesheets_atlas;
@@ -76,10 +74,10 @@ let camera;
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
-  var image_path = imgFiles[1]
-  console.log('Loaded image: ', image_path)
+  current_image_path = imgFile
+  console.log('Loaded image: ', current_image_path)
   img = loadImage(
-    image_path,
+    current_image_path,
     () => { image_loaded_successfuly = true; },
     () => { image_loaded_successfuly = false; }
   )
@@ -231,14 +229,7 @@ export function applyUIChanges(){
   // Update canvas size
   scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
 
-  if (!loaded_user_image){
-    var image_path = imgFiles[floor(random(1000000000)%imgFiles.length)]
-    console.log('Loading new image: ',image_path)
-    loadImage(image_path, (loadedImage)=>{initializeCanvas(loadedImage)});
-  }
-  else{ // To restart the process if we already had a user image loaded but parameters change
-    initializeCanvas(img)
-  }
+  initializeCanvas(img)
 }
 
 function updateArtworkSettings() {
