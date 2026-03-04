@@ -154,8 +154,6 @@ function setup() {
 function initializeCanvas(input_image){
   workingImageHeight = artworkHeight
   workingImageWidth = artworkWidth
-  console.log('workingImageHeight', workingImageHeight)
-  console.log('workingImageWidth', workingImageWidth)
 
   let color_buffer_otions = {
     width: workingImageWidth,
@@ -190,11 +188,11 @@ function draw_steps(){
   clear();
   color_buffer.begin();
   if (getUseInputFile()){ // Draw input file if required
-    image(img, 0-width/2, 0-height/2, width, height)
+    image(img, 0-color_buffer.width/2, 0-color_buffer.height/2, color_buffer.width, color_buffer.height)
   }
   else { // Draw camera otherwise
     scale(-1, 1);
-    image(camera, 0-width/2, 0-height/2, width, height)
+    image(camera, 0-color_buffer.width/2, 0-color_buffer.height/2, color_buffer.width, color_buffer.height)
   }
   color_buffer.end();
 
@@ -253,7 +251,7 @@ export function flipSize(){
   SizeInputs['artworkWidth'].dispatchEvent(event);
   SizeInputs['artworkHeight'].dispatchEvent(event);
 
-  updateArtworkSettings();
+  applyUIChanges();
 }
 
 export function saveImage() {
