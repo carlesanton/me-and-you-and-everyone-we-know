@@ -94,9 +94,10 @@ function setup() {
   fps.setFPS(defaultFPS)
 
   inputs = intialize_toolbar();
-  MainInputs = inputs.mainInputs;
+  SizeInputs = inputs.sizeInputs;
 
   recorder.setSketchFPSMethod(() => {return fps.getFPS()})
+  recorder.setCaptureSingleFrameMethod(() => {saveImage()})
 
   updateArtworkSettings()
 
@@ -154,6 +155,8 @@ function setup() {
 function initializeCanvas(input_image){
   workingImageHeight = artworkHeight
   workingImageWidth = artworkWidth
+  console.log('workingImageHeight', workingImageHeight)
+  console.log('workingImageWidth', workingImageWidth)
 
   let color_buffer_otions = {
     width: workingImageWidth,
@@ -187,7 +190,7 @@ function draw() {
 function draw_steps(){
   clear();
   color_buffer.begin();
-  if (pixelCam.getUseInputFile()){ // Draw input file if required
+  if (getUseInputFile()){ // Draw input file if required
     image(img, 0-width/2, 0-height/2, width, height)
   }
   else { // Draw camera otherwise
@@ -200,6 +203,7 @@ function draw_steps(){
 
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
 
+  background(255, 255, 255);
   image(color_buffer, 0-width/2, 0-height/2, width, height)
 }
 
@@ -237,25 +241,25 @@ export function applyUIChanges(){
 }
 
 function updateArtworkSettings() {
-  artworkWidth = parseInt(MainInputs['artworkWidth'].value);
-  artworkHeight = parseInt(MainInputs['artworkHeight'].value);
+  artworkWidth = parseInt(SizeInputs['artworkWidth'].value);
+  artworkHeight = parseInt(SizeInputs['artworkHeight'].value);
 }
 
 export function flipSize(){
   // Set input seed to current seed
-  const oldArtworkWidth = MainInputs['artworkWidth'].value;
-  const oldArtworkHeight = MainInputs['artworkHeight'].value;
+  const oldArtworkWidth = SizeInputs['artworkWidth'].value;
+  const oldArtworkHeight = SizeInputs['artworkHeight'].value;
 
   artworkWidth = oldArtworkHeight;
   artworkHeight = oldArtworkWidth;
 
-  MainInputs['artworkWidth'].value = artworkWidth;
-  MainInputs['artworkHeight'].value = artworkHeight;
+  SizeInputs['artworkWidth'].value = artworkWidth;
+  SizeInputs['artworkHeight'].value = artworkHeight;
 
   // Update slider aswell by sending input event
   var event = new Event('input');
-  MainInputs['artworkWidth'].dispatchEvent(event);
-  MainInputs['artworkHeight'].dispatchEvent(event);
+  SizeInputs['artworkWidth'].dispatchEvent(event);
+  SizeInputs['artworkHeight'].dispatchEvent(event);
 
   updateArtworkSettings();
 }
@@ -287,7 +291,7 @@ export function load_user_file(user_file){
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
     img = load_video(user_file);
-    pixelCam.setUseInputFile(true);
+    setUseInputFile(true);
   }
   else {
     console.log('Loading Image')
@@ -295,9 +299,9 @@ export function load_user_file(user_file){
       (loadedImage)=>{
         img = loadedImage;
         initializeCanvas(loadedImage)
-        pixelCam.setUseInputFile(true);
+        setUseInputFile(true);
       },
-      () => { image_loaded_successfuly = false; loaded_user_image = true; pixelCam.setUseInputFile(false);}
+      () => { image_loaded_successfuly = false; loaded_user_image = true; setUseInputFile(false);}
     );
   }
   loaded_user_image = true;
@@ -349,6 +353,18 @@ function display_image_error_message(){
   else {
     text("Failed to load default image. \n Upload an image with the 'Load Image' button", 0, 0)
   }
+}
+
+export function setUseInputFile(newUseInputFile) {
+  let oldUseInputFile = useInputFile;
+  useInputFile = newUseInputFile
+  return oldUseInputFile;
+
+}
+
+export function getUseInputFile() {
+  return useInputFile;
+
 }
 
 window.preload = preload
