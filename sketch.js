@@ -280,8 +280,11 @@ export function load_user_file(user_file){
   console.log('fileExtension', fileExtension)
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
-    img = load_video(user_file);
-    setUseInputFile(true);
+    load_video(user_file, (video) => {
+      img = video
+      initializeCanvas(img)
+      setUseInputFile(true);
+    });
   }
   else {
     console.log('Loading Image')
@@ -310,9 +313,10 @@ function loadFrames(animationsFramesPathsDict, callback) {
   return loadedImages;
 }
 
-function load_video(video_path) {
-  let video = createVideo(video_path);
-  // video.size(400, 400);
+function load_video(video_path, callbak) {
+  let video = createVideo(video_path, () => {
+      callbak(video)
+  });
   video.volume(0);
   video.loop();
   video.hide();
