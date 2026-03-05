@@ -34,6 +34,7 @@ let loaded_user_image = false;
 const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
 let useInputFile = false;
+let useInputFileResolution = false;
 
 const pixel_density = 1;
 let canvas;
@@ -144,7 +145,7 @@ function setup() {
   pixelCam.setNumberOfFrames(numberOfFrames);
 
   // FPS Set Fill Color
-  fps.setFillColor([150, 150, 150]);
+  fps.setFillColor([255, 10, 10]);
 
   if (image_loaded_successfuly){
     initializeCanvas(img)
@@ -152,8 +153,14 @@ function setup() {
 }
 
 function initializeCanvas(input_image){
-  workingImageHeight = artworkHeight
-  workingImageWidth = artworkWidth
+  if (getUseInputFileResolution()) {
+    workingImageHeight = input_image.height
+    workingImageWidth = input_image.width
+  }
+  else {
+    workingImageHeight = artworkHeight
+    workingImageWidth = artworkWidth
+  }
 
   let color_buffer_otions = {
     width: workingImageWidth,
@@ -166,9 +173,10 @@ function initializeCanvas(input_image){
     channels: RGBA,
   }
   color_buffer = createFramebuffer(color_buffer_otions)
-  interface_color_buffer = createFramebuffer({width: artworkWidth, height: artworkHeight})
+  interface_color_buffer = createFramebuffer({width: workingImageWidth, height: workingImageHeight})
 
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  resizeCanvas(workingImageWidth, workingImageHeight);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
   recorder.setFilenameSufix('seed-'+ artwork_seed);
 }
@@ -210,7 +218,7 @@ function drawInterface(){
 
   if (fps.isDisplayEnabled()) {
     fps.calculateFPS(millis());
-    fps.displayFPS(artworkWidth/2, -artworkHeight/2);
+    fps.displayFPS(interface_color_buffer.width/2, -interface_color_buffer.height/2);
   }
 
   interface_color_buffer.end()
@@ -218,14 +226,14 @@ function drawInterface(){
 }
 
 function windowResized() {
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 }
 
 export function applyUIChanges(){
   updateArtworkSettings();
 
   // Update canvas size
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
   initializeCanvas(img)
 }
@@ -256,8 +264,8 @@ export function flipSize(){
 
 export function saveImage() {
   let color_buffer_otions = {
-    width: artworkWidth,
-    height: artworkHeight,
+    width: workingImageWidth,
+    height: workingImageHeight,
     textureFiltering: NEAREST,
     antialias: false,
     desity: 1,
@@ -268,7 +276,7 @@ export function saveImage() {
   let tmp_buffer = createFramebuffer(color_buffer_otions)
 
   tmp_buffer.begin();
-  image(color_buffer, 0-artworkWidth/2, 0-artworkHeight/2, artworkWidth, artworkHeight);
+  image(color_buffer, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
   tmp_buffer.end()
   let filename =  `${artwork_seed}.png`
   // Save the image
@@ -358,6 +366,19 @@ export function setUseInputFile(newUseInputFile) {
 
 export function getUseInputFile() {
   return useInputFile;
+
+}
+
+export function setUseInputFileResolution(newUseInputFileRes) {
+  let oldUseInputFileRes = useInputFileResolution;
+  useInputFileResolution = newUseInputFileRes;
+  applyUIChanges();
+  return oldUseInputFileRes;
+
+}
+
+export function getUseInputFileResolution() {
+  return useInputFileResolution;
 
 }
 

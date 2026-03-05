@@ -17,6 +17,8 @@ import {
     pixelCam,
     setUseInputFile,
     getUseInputFile,
+    setUseInputFileResolution,
+    getUseInputFileResolution,
 } from './sketch.js'
 
 function createSizeSettingsCard() {
@@ -25,6 +27,23 @@ function createSizeSettingsCard() {
     // Create Main Card
     const card = create_daisyui_expandable_card('sizeSettings', 'Size');
     const cardBody = card.getElementsByClassName('collapse-content')[0]
+
+
+    const useInputFileRes = createToggleButton('Use input file resolution', (a) => {
+        let checked = a.target.checked;
+        setUseInputFileResolution(checked);
+        if (checked) { // Hide elements if needed
+            elements_dict['artworkWidth'].linkedDisabled = true
+            elements_dict['artworkHeight'].linkedDisabled = true
+            changeOrientation.getElementsByTagName('button')[0].disabled = true;
+        }
+        else {
+            elements_dict['artworkWidth'].linkedDisabled = false
+            elements_dict['artworkHeight'].linkedDisabled = false
+            changeOrientation.getElementsByTagName('button')[0].disabled = false;
+        }
+    }, getUseInputFileResolution());
+    elements_dict['useFileRes'] = useInputFileRes.getElementsByTagName('button')[0];
 
     const width = create_number_input_slider_and_number('artworkWidth', 'Width', defaultArtworkWidth, 0, 4000);
     elements_dict['artworkWidth'] = width.getElementsByTagName('input')[0];
@@ -38,6 +57,8 @@ function createSizeSettingsCard() {
     // Buttons
     const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
 
+    cardBody.appendChild(useInputFileRes);
+    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(width);
     cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(changeOrientation);
