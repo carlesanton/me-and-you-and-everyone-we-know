@@ -35,6 +35,8 @@ const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
 let useInputFile = false;
 let useInputFileResolution = false;
+let inputFileResolutionScale = 4.;
+let prevPixelSize;
 
 const pixel_density = 1;
 let canvas;
@@ -141,19 +143,22 @@ function setup() {
   spritesheets_atlas = pixelCam.joinImagesIntoGrid(Object.values(spritesheets));
   pixelCam.setSpritesheetsAtlas(spritesheets_atlas);
   pixelCam.setNumberOfFrames(numberOfFrames);
+  prevPixelSize = pixelCam.getPixelSize()
 
   // FPS Set Fill Color
   fps.setFillColor([255, 10, 10]);
 
   if (image_loaded_successfuly){
     initializeCanvas(img)
+    setInputFileSizeLabel()
+    setPixelsPerSideLabel()
   }
 }
 
 function initializeCanvas(input_image){
   if (getUseInputFileResolution()) {
-    workingImageHeight = input_image.height
-    workingImageWidth = input_image.width
+    workingImageHeight = Math.round(input_image.height * inputFileResolutionScale);
+    workingImageWidth = Math.round(input_image.width * inputFileResolutionScale);
   }
   else {
     workingImageHeight = artworkHeight
@@ -185,6 +190,12 @@ function draw() {
   }
   else {
     display_image_error_message()
+  }
+
+  if (prevPixelSize != pixelCam.getPixelSize()) {
+    console.log('prevPixelSize', prevPixelSize, pixelCam.getPixelSize())
+    setPixelsPerSideLabel()
+    prevPixelSize = pixelCam.getPixelSize()
   }
 
   drawInterface()
@@ -234,11 +245,13 @@ export function applyUIChanges(){
   scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
   initializeCanvas(img)
+  setPixelsPerSideLabel()
 }
 
-function updateArtworkSettings() {
+export function updateArtworkSettings() {
   artworkWidth = parseInt(SizeInputs['artworkWidth'].value);
   artworkHeight = parseInt(SizeInputs['artworkHeight'].value);
+  setPixelsPerSideLabel()
 }
 
 export function flipSize(){
@@ -384,6 +397,39 @@ export function setUseInputFileResolution(newUseInputFileRes) {
 export function getUseInputFileResolution() {
   return useInputFileResolution;
 
+}
+
+export function setInputFileResolutionScale(newInputFileResScale) {
+  let oldInputFileResScale = inputFileResolutionScale;
+  inputFileResolutionScale = newInputFileResScale;
+  setInputFileSizeLabel();
+  setPixelsPerSideLabel();
+  return oldInputFileResScale;
+
+}
+
+export function getInputFileResolutionScale() {
+  return inputFileResolutionScale;
+
+}
+
+function setInputFileSizeLabel() {
+  let w = Math.round(img.width * inputFileResolutionScale);
+  let h = Math.round(img.height * inputFileResolutionScale);
+  SizeInputs['inputFileSizeLabel'].innerHTML = w + " x " + h;
+}
+
+function setPixelsPerSideLabel(){
+  let w = artworkWidth;
+  let h = artworkHeight;
+  if (getUseInputFileResolution()) {
+    w = Math.round(img.width * inputFileResolutionScale);
+    h = Math.round(img.height * inputFileResolutionScale);
+  }
+  console.log('w, h', w, h)
+  let w_pixels = parseFloat(w/pixelCam.getPixelSize()).toFixed(2);
+  let h_pixels = parseFloat(h/pixelCam.getPixelSize()).toFixed(2);
+  SizeInputs['pixelsPerSide'].innerHTML = "Pixels per side: " + w_pixels + " x " + h_pixels;
 }
 
 function create_camera_input() {

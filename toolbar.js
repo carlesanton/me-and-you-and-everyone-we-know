@@ -4,7 +4,9 @@ import {
     create_button,
     create_input_file_button,
     createSmallBreak,
-    createToggleButton
+    createToggleButton,
+    create_subtitle,
+    createText,
 } from './lib/JSGenerativeArtTools/ui.js'
 import {
     defaultArtworkWidth,
@@ -19,6 +21,9 @@ import {
     getUseInputFile,
     setUseInputFileResolution,
     getUseInputFileResolution,
+    setInputFileResolutionScale,
+    getInputFileResolutionScale,
+    updateArtworkSettings,
 } from './sketch.js'
 
 function createSizeSettingsCard() {
@@ -35,39 +40,94 @@ function createSizeSettingsCard() {
         if (checked) { // Hide elements if needed
             elements_dict['artworkWidth'].linkedDisabled = true
             elements_dict['artworkHeight'].linkedDisabled = true
-            changeOrientation.getElementsByTagName('button')[0].disabled = true;
+            elements_dict['changeOrientation'].disabled = true;
+            elements_dict['fileResScale'].linkedDisabled = false;
         }
         else {
             elements_dict['artworkWidth'].linkedDisabled = false
             elements_dict['artworkHeight'].linkedDisabled = false
-            changeOrientation.getElementsByTagName('button')[0].disabled = false;
+            elements_dict['changeOrientation'].disabled = false;
+            elements_dict['fileResScale'].linkedDisabled = true;
         }
     }, getUseInputFileResolution());
-    elements_dict['useFileRes'] = useInputFileRes.getElementsByTagName('button')[0];
+    elements_dict['useFileRes'] = useInputFileRes.getElementsByTagName('input')[0];
+    
+    const inputFileSizeLabel = createText('Test text');
+    elements_dict['inputFileSizeLabel'] = inputFileSizeLabel.getElementsByTagName('text')[0];
 
-    const width = create_number_input_slider_and_number('artworkWidth', 'Width', defaultArtworkWidth, 0, 4000);
+    const resScale = create_number_input_slider_and_number(
+        'inputFileResScale',
+        'Resolution Scale',
+        getInputFileResolutionScale(),
+        0,
+        20,
+        setInputFileResolutionScale,
+        0.1,
+    );
+    elements_dict['fileResScale'] = resScale.getElementsByTagName('input')[0];
+
+    const width = create_number_input_slider_and_number(
+        'artworkWidth',
+        'Width',
+        defaultArtworkWidth,
+        0,
+        4000,
+        updateArtworkSettings,
+    );
     elements_dict['artworkWidth'] = width.getElementsByTagName('input')[0];
 
     const changeOrientation = create_button('Flip Orientation', () => { flipSize(); }, '', 'xs')
-    elements_dict['changeOrientation'] = changeOrientation.getElementsByTagName('input')[0];
+    elements_dict['changeOrientation'] = changeOrientation.getElementsByTagName('button')[0];
 
-    const height = create_number_input_slider_and_number('artworkHeight', 'Height', defaultArtworkHeight,0, 4000);
+    const height = create_number_input_slider_and_number(
+        'artworkHeight',
+        'Height',
+        defaultArtworkHeight,
+        0,
+        4000,
+        updateArtworkSettings,
+    );
     elements_dict['artworkHeight'] = height.getElementsByTagName('input')[0];
+
+    const pixelsPerSide = createText('Pixels per side:');
+    elements_dict['pixelsPerSide'] = pixelsPerSide.getElementsByTagName('text')[0];
 
     // Buttons
     const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
 
     cardBody.appendChild(useInputFileRes);
     cardBody.appendChild(createSmallBreak('10px'));
+    cardBody.appendChild(inputFileSizeLabel);
+    cardBody.appendChild(createSmallBreak('10px'));
+    cardBody.appendChild(resScale);
+
+    cardBody.appendChild(create_subtitle());
     cardBody.appendChild(width);
     cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(changeOrientation);
     cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(height);
-    cardBody.appendChild(document.createElement('br'));
+    
+    cardBody.appendChild(create_subtitle());
+    cardBody.appendChild(pixelsPerSide);
+    cardBody.appendChild(createSmallBreak('20px'));
     cardBody.appendChild(applyChangesButton);
 
     elements_dict['main-toolbar'] = card;
+
+    // Disable elements initialy
+    if (getUseInputFileResolution()) {
+        elements_dict['artworkWidth'].linkedDisabled = true
+        elements_dict['artworkHeight'].linkedDisabled = true
+        elements_dict['changeOrientation'].disabled = true;
+        elements_dict['fileResScale'].linkedDisabled = false;
+    }
+    else {
+        elements_dict['artworkWidth'].linkedDisabled = false
+        elements_dict['artworkHeight'].linkedDisabled = false
+        elements_dict['changeOrientation'].disabled = false;
+        elements_dict['fileResScale'].linkedDisabled = true;
+    }
 
     return elements_dict;
 }
