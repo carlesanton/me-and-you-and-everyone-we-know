@@ -287,6 +287,7 @@ export function saveImage() {
   let tmp_buffer = createFramebuffer(color_buffer_otions)
 
   tmp_buffer.begin();
+  background(255,255,255);
   image(color_buffer, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
   tmp_buffer.end()
   let filename =  `${artwork_seed}.png`
