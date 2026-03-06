@@ -105,9 +105,7 @@ function setup() {
   canvas = createCanvas(artworkWidth, artworkHeight, WEBGL);
 
   // Create Camera
-  camera = createCapture(VIDEO);
-  camera.size(artworkWidth, artworkHeight);
-  camera.hide();
+  if (!useInputFile) camera = create_camera_input();
 
   // Move Canvas to canvas-wrapper div
   canvas.parent("canvas-wrapper")
@@ -359,7 +357,13 @@ function display_image_error_message(){
 
 export function setUseInputFile(newUseInputFile) {
   let oldUseInputFile = useInputFile;
-  useInputFile = newUseInputFile
+  useInputFile = newUseInputFile;
+  if (!useInputFile) {
+    camera = create_camera_input();
+  }
+  else {
+    delete_camera_input(camera);
+  }
   return oldUseInputFile;
 
 }
@@ -380,6 +384,18 @@ export function setUseInputFileResolution(newUseInputFileRes) {
 export function getUseInputFileResolution() {
   return useInputFileResolution;
 
+}
+
+function create_camera_input() {
+  let cam = createCapture(VIDEO);
+  cam.size(artworkWidth, artworkHeight);
+  cam.hide();
+  return cam
+}
+
+function delete_camera_input(cam) {
+  cam.remove();
+  return 
 }
 
 window.preload = preload
