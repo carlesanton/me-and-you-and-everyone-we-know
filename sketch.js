@@ -442,7 +442,9 @@ function create_camera_input() {
 }
 
 function delete_camera_input(cam) {
-  cam.remove();
+  if(cam!== undefined && cam !== null) {
+    cam.remove();
+  }
   return 
 }
 
