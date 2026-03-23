@@ -181,7 +181,7 @@ function initializeCanvas(input_image){
   resizeCanvas(workingImageWidth, workingImageHeight);
   scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
-  recorder.setFilenameSufix(create_save_filename_suffix());
+  recorder.setFilenameSufix(create_save_filename_suffix);
 }
 
 function draw() {
