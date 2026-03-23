@@ -181,7 +181,7 @@ function initializeCanvas(input_image){
   resizeCanvas(workingImageWidth, workingImageHeight);
   scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
-  recorder.setFilenameSufix('seed-'+ artwork_seed);
+  recorder.setFilenameSufix(create_save_filename_suffix());
 }
 
 function draw() {
@@ -290,12 +290,12 @@ export function saveImage() {
   background(255,255,255);
   image(color_buffer, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
   tmp_buffer.end()
-  let filename =  `${artwork_seed}.png`
+  let filename =  recorder.defaultBaseFilename(new Date(Date.now())) + '_' + create_save_filename_suffix() + ".png"
   // Save the image
   saveCanvas(tmp_buffer, filename, 'png');
 }
 
-export function load_user_file(user_file){
+export function load_user_file(user_file, file_name){
   const fileExtension = getFileExtension(user_file);
   console.log('fileExtension', fileExtension)
   if (videoFormats.includes(fileExtension)) {
@@ -317,6 +317,7 @@ export function load_user_file(user_file){
       () => { image_loaded_successfuly = false; loaded_user_image = true; setUseInputFile(false);}
     );
   }
+  current_image_path = file_name;
   loaded_user_image = true;
   image_loaded_successfuly = true;
 }
@@ -443,6 +444,19 @@ function create_camera_input() {
 function delete_camera_input(cam) {
   cam.remove();
   return 
+}
+
+function create_save_filename_suffix() {
+  let filename = '';
+  if (getUseInputFile()) {
+    filename += current_image_path.replace(/\.[^/.]+$/, "");
+  }
+  else {
+    filename += 'cam'
+  }
+  let pixel_size = pixelCam.getPixelSize()
+  let save_filename = filename + `_ps_${pixel_size}`;
+  return save_filename
 }
 
 window.preload = preload
