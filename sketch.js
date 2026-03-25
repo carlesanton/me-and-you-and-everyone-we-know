@@ -63,7 +63,7 @@ const animationsFramesPathsDict = {
 
 let current_image_path;
 
-let spritesheets = {}; // dict for all the spritesheets in a single texture (grid) {0: image-grid, 1: image-grid, ...}
+let spritesheets = []; // dict for all the spritesheets in a single texture (grid) {0: image-grid, 1: image-grid, ...}
 let spritesheets_atlas;
 let numberOfFrames = 4;
 
@@ -132,17 +132,9 @@ function setup() {
   // // Create and set ascii texture
   // let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
   // pixelCam.setSpritesheetsAtlas(ascii_texture_buffer);
-
-  let colorLevels = Object.keys(spritesheets).length;
-  pixelCam.setColorLevels(colorLevels);
-  let gridSideSize = ceil(sqrt(colorLevels));
-  pixelCam.setGridSideSize(gridSideSize);
-
-  let frameGridSideSize = Math.ceil(Math.sqrt(numberOfFrames));
-  pixelCam.setFrameGridSideSize(frameGridSideSize);
-  spritesheets_atlas = pixelCam.joinImagesIntoGrid(Object.values(spritesheets));
-  pixelCam.setSpritesheetsAtlas(spritesheets_atlas);
   pixelCam.setNumberOfFrames(numberOfFrames);
+  pixelCam.useSpritesheets(spritesheets)
+  pixelCam.updateUISymbols()
   prevPixelSize = pixelCam.getPixelSize()
 
   // FPS Set Fill Color
@@ -193,7 +185,6 @@ function draw() {
   }
 
   if (prevPixelSize != pixelCam.getPixelSize()) {
-    console.log('prevPixelSize', prevPixelSize, pixelCam.getPixelSize())
     setPixelsPerSideLabel()
     prevPixelSize = pixelCam.getPixelSize()
   }
@@ -324,10 +315,11 @@ export function load_user_file(user_file, file_name){
 
 function loadFrames(animationsFramesPathsDict, callback) {
   console.log('Loading all spritesheets');
-  let loadedImages = {};
+  let loadedImages = [];
 
   for (let key in animationsFramesPathsDict) {
-    loadedImages[key] = loadImage(animationsFramesPathsDict[key]);
+    let spritesheetDict = {'id': key, 'img': loadImage(animationsFramesPathsDict[key])};
+    loadedImages.push(spritesheetDict)
   }
   callback(loadedImages);
 
@@ -428,7 +420,7 @@ function setPixelsPerSideLabel(){
     w = Math.round(img.width * inputFileResolutionScale);
     h = Math.round(img.height * inputFileResolutionScale);
   }
-  console.log('w, h', w, h)
+
   let w_pixels = parseFloat(w/pixelCam.getPixelSize()).toFixed(2);
   let h_pixels = parseFloat(h/pixelCam.getPixelSize()).toFixed(2);
   SizeInputs['pixelsPerSide'].innerHTML = "Pixels per side: " + w_pixels + " x " + h_pixels;
