@@ -175,7 +175,7 @@ function intialize_toolbar(){
     elements_dict['inputSettings'] = InputSettings;
 
     // Pixel Cam
-    var pixelCamInputs = pixelCam.createPixelCalSettings()
+    var pixelCamInputs = pixelCam.createPixelCamSettings()
     toolbar.appendChild(pixelCamInputs['main-toolbar']);
     toolbar.appendChild(document.createElement('br'));
     elements_dict['pixelCamInputs'] = pixelCamInputs;
