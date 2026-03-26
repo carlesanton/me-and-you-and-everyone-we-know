@@ -6,6 +6,9 @@
 *.webp
 !/img/*.jpg
 
+# Dont ignore mockup animations
+!img/mockup/*.png
+
 # Ignore Combine24objects.json
 Combine24objects*.json
 
