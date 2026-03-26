@@ -3,6 +3,7 @@ import {scaleCanvasToFit, prepareP5Js} from './lib/JSGenerativeArtTools/utils.js
 import {intialize_toolbar} from './toolbar.js';
 import { Recorder } from './lib/JSGenerativeArtTools/record/record.js';
 import {PixelCam} from './lib/JSGenerativeArtTools/pixelCam/pixelCam.js';
+import {ImageAdjustment} from './lib/JSGenerativeArtTools/imageAdjustment/imageAdjustment.js';
 
 // The desired artwork size in which everything is pixel perfect.
 // Let the canvas resize itself to fit the screen in "scaleCanvasToFit()" function.
@@ -33,6 +34,7 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 let loaded_user_image = false;
 const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
+// let useInputFile = true;
 let useInputFile = false;
 let useInputFileResolution = false;
 let inputFileResolutionScale = 4.;
@@ -72,6 +74,7 @@ export let recorder;
 let inputs;
 
 export let pixelCam;
+export let imageAdjustment;
 let camera;
 
 function preload() {
@@ -86,6 +89,7 @@ function preload() {
   )
 
   pixelCam = new PixelCam();
+  imageAdjustment = new ImageAdjustment();
 
   spritesheets = loadFrames(animationsFramesPathsDict, () => {console.log('Loaded all spritesheets')})
 }
@@ -116,6 +120,7 @@ function setup() {
   canvas.pixelDensity(pixel_density);
   
   pixelCam.initializeShader()
+  imageAdjustment.initializeShader()
 
   // Apply the loaded font
   textFont(myFont);
@@ -206,6 +211,7 @@ function draw_steps(){
 
   pixelCam.increaseFrame();
 
+  color_buffer = imageAdjustment.imageAdjustmentGPU(color_buffer)
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
 
   background(255, 255, 255);
