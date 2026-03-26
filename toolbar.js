@@ -17,6 +17,7 @@ import {
     fps,
     recorder,
     pixelCam,
+    imageAdjustment,
     setUseInputFile,
     getUseInputFile,
     setUseInputFileResolution,
@@ -179,6 +180,12 @@ function intialize_toolbar(){
     toolbar.appendChild(pixelCamInputs['main-toolbar']);
     toolbar.appendChild(document.createElement('br'));
     elements_dict['pixelCamInputs'] = pixelCamInputs;
+
+    // Image Adjustment
+    var imageAdjustInputs = imageAdjustment.createImageAdjustmentSettings()
+    toolbar.appendChild(imageAdjustInputs['main-toolbar']);
+    toolbar.appendChild(document.createElement('br'));
+    elements_dict['imageAdjustInputs'] = pixelCamInputs;
 
     // FPS
     var FPSInputs = fps.createFPSSettingsCard();
