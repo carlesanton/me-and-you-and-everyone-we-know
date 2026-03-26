@@ -3,75 +3,151 @@ import {
     create_daisyui_expandable_card,
     create_button,
     create_input_file_button,
-    turnDaisyUICardIntoBodyWithTitle,
     createSmallBreak,
+    createToggleButton,
     create_subtitle,
+    createText,
 } from './lib/JSGenerativeArtTools/ui.js'
 import {
     defaultArtworkWidth,
     defaultArtworkHeight,
-    defaultPixelSize,
-    artwork_seed,
     applyUIChanges,
-    saveImage,
     flipSize,
     load_user_file,
     fps,
     recorder,
     pixelCam,
+    setUseInputFile,
+    getUseInputFile,
+    setUseInputFileResolution,
+    getUseInputFileResolution,
+    setInputFileResolutionScale,
+    getInputFileResolutionScale,
+    updateArtworkSettings,
 } from './sketch.js'
 
-function createArtworkSettingsCard() {
+function createSizeSettingsCard() {
     var elements_dict = {};
 
     // Create Main Card
-    const card = create_daisyui_expandable_card('artworkSettings', 'Artwork Settings');
+    const card = create_daisyui_expandable_card('sizeSettings', 'Size');
     const cardBody = card.getElementsByClassName('collapse-content')[0]
 
-    // Add Inputs
-    // Size
-    const sizeTitle = create_subtitle('Size');
-    const width = create_number_input_slider_and_number('artworkWidth', 'Width', defaultArtworkWidth, 0, 4000);
+
+    const useInputFileRes = createToggleButton('Use input file resolution', (a) => {
+        let checked = a.target.checked;
+        setUseInputFileResolution(checked);
+        if (checked) { // Hide elements if needed
+            elements_dict['artworkWidth'].linkedDisabled = true
+            elements_dict['artworkHeight'].linkedDisabled = true
+            elements_dict['changeOrientation'].disabled = true;
+            elements_dict['fileResScale'].linkedDisabled = false;
+        }
+        else {
+            elements_dict['artworkWidth'].linkedDisabled = false
+            elements_dict['artworkHeight'].linkedDisabled = false
+            elements_dict['changeOrientation'].disabled = false;
+            elements_dict['fileResScale'].linkedDisabled = true;
+        }
+    }, getUseInputFileResolution());
+    elements_dict['useFileRes'] = useInputFileRes.getElementsByTagName('input')[0];
+    
+    const inputFileSizeLabel = createText('Test text');
+    elements_dict['inputFileSizeLabel'] = inputFileSizeLabel.getElementsByTagName('text')[0];
+
+    const resScale = create_number_input_slider_and_number(
+        'inputFileResScale',
+        'Resolution Scale',
+        getInputFileResolutionScale(),
+        0,
+        20,
+        setInputFileResolutionScale,
+        0.1,
+    );
+    elements_dict['fileResScale'] = resScale.getElementsByTagName('input')[0];
+
+    const width = create_number_input_slider_and_number(
+        'artworkWidth',
+        'Width',
+        defaultArtworkWidth,
+        0,
+        4000,
+        updateArtworkSettings,
+    );
     elements_dict['artworkWidth'] = width.getElementsByTagName('input')[0];
 
     const changeOrientation = create_button('Flip Orientation', () => { flipSize(); }, '', 'xs')
-    elements_dict['changeOrientation'] = changeOrientation.getElementsByTagName('input')[0];
+    elements_dict['changeOrientation'] = changeOrientation.getElementsByTagName('button')[0];
 
-    const height = create_number_input_slider_and_number('artworkHeight', 'Height', defaultArtworkHeight,0, 4000);
+    const height = create_number_input_slider_and_number(
+        'artworkHeight',
+        'Height',
+        defaultArtworkHeight,
+        0,
+        4000,
+        updateArtworkSettings,
+    );
     elements_dict['artworkHeight'] = height.getElementsByTagName('input')[0];
 
-    const pixelSize = create_number_input_slider_and_number('pixelSize', 'Pixel Size', defaultPixelSize,1, 100);
-    elements_dict['pixelSize'] = pixelSize.getElementsByTagName('input')[0];
+    const pixelsPerSide = createText('Pixels per side:');
+    elements_dict['pixelsPerSide'] = pixelsPerSide.getElementsByTagName('text')[0];
 
-    const emptyTitle1 = create_subtitle();
-    const emptyTitle2 = create_subtitle();
     // Buttons
     const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
-    const saveFrameButton = create_button('Save Current Frame', () => { saveImage(); });
-    const loadImage = create_input_file_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
 
-    // FPS, take only body
-    var FPSInputs = fps.createFPSSettingsCard();
-    var FPSInputsBody = turnDaisyUICardIntoBodyWithTitle(FPSInputs['main-toolbar'])
-    elements_dict['fpsInputs'] = FPSInputs;
+    cardBody.appendChild(useInputFileRes);
+    cardBody.appendChild(createSmallBreak('10px'));
+    cardBody.appendChild(inputFileSizeLabel);
+    cardBody.appendChild(createSmallBreak('10px'));
+    cardBody.appendChild(resScale);
 
-    cardBody.appendChild(pixelSize);
-
-    cardBody.appendChild(sizeTitle);
+    cardBody.appendChild(create_subtitle());
     cardBody.appendChild(width);
     cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(changeOrientation);
     cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(height);
-
-    cardBody.appendChild(emptyTitle1);
-
-    cardBody.appendChild(FPSInputsBody);
-
-    cardBody.appendChild(emptyTitle2);
+    
+    cardBody.appendChild(create_subtitle());
+    cardBody.appendChild(pixelsPerSide);
+    cardBody.appendChild(createSmallBreak('20px'));
     cardBody.appendChild(applyChangesButton);
-    cardBody.appendChild(document.createElement('br'));
-    cardBody.appendChild(saveFrameButton);
+
+    elements_dict['main-toolbar'] = card;
+
+    // Disable elements initialy
+    if (getUseInputFileResolution()) {
+        elements_dict['artworkWidth'].linkedDisabled = true
+        elements_dict['artworkHeight'].linkedDisabled = true
+        elements_dict['changeOrientation'].disabled = true;
+        elements_dict['fileResScale'].linkedDisabled = false;
+    }
+    else {
+        elements_dict['artworkWidth'].linkedDisabled = false
+        elements_dict['artworkHeight'].linkedDisabled = false
+        elements_dict['changeOrientation'].disabled = false;
+        elements_dict['fileResScale'].linkedDisabled = true;
+    }
+
+    return elements_dict;
+}
+
+function createInputCard() {
+    var elements_dict = {};
+
+    // Create Main Card
+    const card = create_daisyui_expandable_card('inputSettings', 'Input');
+    const cardBody = card.getElementsByClassName('collapse-content')[0]
+
+    // Add Inputs
+    const useCamera = createToggleButton('Use Camera', (a) => {
+        setUseInputFile(!a.target.checked);
+    }, !getUseInputFile());
+    elements_dict['useCamera'] = useCamera.getElementsByTagName('button')[0];
+
+    const loadImage = create_input_file_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
+
+    cardBody.appendChild(useCamera);
     cardBody.appendChild(document.createElement('br'));
     cardBody.appendChild(loadImage);
 
@@ -84,18 +160,31 @@ function intialize_toolbar(){
     var elements_dict = {}
     toolbar = document.getElementById('toolbar');
 
-    // Main Settings UI
-    var MainInputs = createArtworkSettingsCard();
-    toolbar.appendChild(MainInputs['main-toolbar']);
+    // Size Settings UI
+    var SizeInputs = createSizeSettingsCard();
+    toolbar.appendChild(SizeInputs['main-toolbar']);
     toolbar.appendChild(document.createElement('br'));
 
-    elements_dict['mainInputs'] = MainInputs;
+    elements_dict['sizeInputs'] = SizeInputs;
+
+    // Input Settings
+    var InputSettings = createInputCard()
+    toolbar.appendChild(InputSettings['main-toolbar']);
+    toolbar.appendChild(document.createElement('br'));
+
+    elements_dict['inputSettings'] = InputSettings;
 
     // Pixel Cam
-    var pixelCamInputs = pixelCam.createPixelCalSettings()
+    var pixelCamInputs = pixelCam.createPixelCamSettings()
     toolbar.appendChild(pixelCamInputs['main-toolbar']);
     toolbar.appendChild(document.createElement('br'));
     elements_dict['pixelCamInputs'] = pixelCamInputs;
+
+    // FPS
+    var FPSInputs = fps.createFPSSettingsCard();
+    toolbar.appendChild(FPSInputs['main-toolbar']);
+    toolbar.appendChild(document.createElement('br'));
+    elements_dict['fpsInputs'] = pixelCamInputs;
 
     // Recorder UI
     var recorderInputs = recorder.createSettingsCard();

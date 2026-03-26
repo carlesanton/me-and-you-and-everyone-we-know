@@ -11,7 +11,7 @@ import {PixelCam} from './lib/JSGenerativeArtTools/pixelCam/pixelCam.js';
 // If you target size is bigger you can reduce that value. e.g. "pixelDensity(2)".
 // Inputs
 // Main
-let MainInputs
+let SizeInputs
 
 // Defaults
 // Main
@@ -19,7 +19,7 @@ export const defaultArtworkWidth = 1280;
 export const defaultArtworkHeight = 720;
 export const defaultArtworkSeed = -1;
 export const defaultPixelSize = 4;
-export const defaultFPS = 15;
+export const defaultFPS = 10;
 
 // Variables
 // Main
@@ -33,6 +33,10 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 let loaded_user_image = false;
 const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
+let useInputFile = false;
+let useInputFileResolution = false;
+let inputFileResolutionScale = 4.;
+let prevPixelSize;
 
 const pixel_density = 1;
 let canvas;
@@ -42,11 +46,26 @@ let myFont;
 let color_buffer;
 let interface_color_buffer;
 
-const imgFiles = [
-  'img/1225657.jpg',
-  'img/waterfall.jpg',
-  'img/bw-gradient.avif',
-]
+const imgFile = 'img/waterfall.jpg'
+
+const animationsFramesPathsDict = {
+  0: 'img/mockup/0.png',
+  1: 'img/mockup/1.png',
+  2: 'img/mockup/2.png',
+  3: 'img/mockup/3.png',
+  4: 'img/mockup/4.png',
+  5: 'img/mockup/5.png',
+  6: 'img/mockup/6.png',
+  7: 'img/mockup/7.png',
+  8: 'img/mockup/8.png',
+  9: 'img/mockup/9.png',
+}
+
+let current_image_path;
+
+let spritesheets = []; // dict for all the spritesheets in a single texture (grid) {0: image-grid, 1: image-grid, ...}
+let spritesheets_atlas;
+let numberOfFrames = 4;
 
 export let fps;
 export let recorder;
@@ -58,24 +77,29 @@ let camera;
 function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
-  var image_path = imgFiles[1]
-  console.log('Loaded image: ', image_path)
+  current_image_path = imgFile
+  console.log('Loaded image: ', current_image_path)
   img = loadImage(
-    image_path,
+    current_image_path,
     () => { image_loaded_successfuly = true; },
     () => { image_loaded_successfuly = false; }
   )
 
   pixelCam = new PixelCam();
+
+  spritesheets = loadFrames(animationsFramesPathsDict, () => {console.log('Loaded all spritesheets')})
 }
 
 function setup() {
   recorder = new Recorder()
   fps = new FPS()
+  fps.setFPS(defaultFPS)
+
   inputs = intialize_toolbar();
-  MainInputs = inputs.mainInputs;
+  SizeInputs = inputs.sizeInputs;
 
   recorder.setSketchFPSMethod(() => {return fps.getFPS()})
+  recorder.setCaptureSingleFrameMethod(() => {saveImage()})
 
   updateArtworkSettings()
 
@@ -83,9 +107,7 @@ function setup() {
   canvas = createCanvas(artworkWidth, artworkHeight, WEBGL);
 
   // Create Camera
-  camera = createCapture(VIDEO);
-  camera.size(artworkWidth, artworkHeight);
-  camera.hide();
+  if (!useInputFile) camera = create_camera_input();
 
   // Move Canvas to canvas-wrapper div
   canvas.parent("canvas-wrapper")
@@ -102,26 +124,38 @@ function setup() {
   let asciiStr = ".,:;i1@tfLCG08";
 
   // Set color levels and grid size vars depending on ascii string
-  let colorLevels = asciiStr.length;
-  pixelCam.setColorLevels(colorLevels);
-  let gridSideSize = ceil(sqrt(colorLevels));
-  pixelCam.setGridSideSize(gridSideSize);
+  // let colorLevels = asciiStr.length;
+  // pixelCam.setColorLevels(colorLevels);
+  // let gridSideSize = ceil(sqrt(colorLevels));
+  // pixelCam.setGridSideSize(gridSideSize);
 
-  // Create and set ascii texture
-  let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
-  pixelCam.setASCIITexture(ascii_texture_buffer);
+  // // Create and set ascii texture
+  // let ascii_texture_buffer = pixelCam.createASCIITexture(asciiStr);
+  // pixelCam.setSpritesheetsAtlas(ascii_texture_buffer);
+  pixelCam.setNumberOfFrames(numberOfFrames);
+  pixelCam.useSpritesheets(spritesheets)
+  pixelCam.updateUISymbols()
+  prevPixelSize = pixelCam.getPixelSize()
 
   // FPS Set Fill Color
-  fps.setFillColor([150, 150, 150]);
+  fps.setFillColor([255, 10, 10]);
 
   if (image_loaded_successfuly){
     initializeCanvas(img)
+    setInputFileSizeLabel()
+    setPixelsPerSideLabel()
   }
 }
 
 function initializeCanvas(input_image){
-  workingImageHeight = artworkHeight
-  workingImageWidth = artworkWidth
+  if (getUseInputFileResolution()) {
+    workingImageHeight = Math.round(input_image.height * inputFileResolutionScale);
+    workingImageWidth = Math.round(input_image.width * inputFileResolutionScale);
+  }
+  else {
+    workingImageHeight = artworkHeight
+    workingImageWidth = artworkWidth
+  }
 
   let color_buffer_otions = {
     width: workingImageWidth,
@@ -134,11 +168,12 @@ function initializeCanvas(input_image){
     channels: RGBA,
   }
   color_buffer = createFramebuffer(color_buffer_otions)
-  interface_color_buffer = createFramebuffer({width: artworkWidth, height: artworkHeight})
+  interface_color_buffer = createFramebuffer({width: workingImageWidth, height: workingImageHeight})
 
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  resizeCanvas(workingImageWidth, workingImageHeight);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
-  recorder.setFilenameSufix('seed-'+ artwork_seed);
+  recorder.setFilenameSufix(create_save_filename_suffix);
 }
 
 function draw() {
@@ -149,22 +184,31 @@ function draw() {
     display_image_error_message()
   }
 
+  if (prevPixelSize != pixelCam.getPixelSize()) {
+    setPixelsPerSideLabel()
+    prevPixelSize = pixelCam.getPixelSize()
+  }
+
   drawInterface()
 }
 
 function draw_steps(){
+  clear();
   color_buffer.begin();
-  scale(-1, 1);
-  if (pixelCam.getUseInputFile()){ // Draw input file if required
-    image(img, 0-width/2, 0-height/2, width, height)
+  if (getUseInputFile()){ // Draw input file if required
+    image(img, 0-color_buffer.width/2, 0-color_buffer.height/2, color_buffer.width, color_buffer.height)
   }
   else { // Draw camera otherwise
-    image(camera, 0-width/2, 0-height/2, width, height)
+    scale(-1, 1);
+    image(camera, 0-color_buffer.width/2, 0-color_buffer.height/2, color_buffer.width, color_buffer.height)
   }
   color_buffer.end();
 
+  pixelCam.increaseFrame();
+
   color_buffer = pixelCam.pixelCamGPU(color_buffer)
 
+  background(255, 255, 255);
   image(color_buffer, 0-width/2, 0-height/2, width, height)
 }
 
@@ -174,7 +218,7 @@ function drawInterface(){
 
   if (fps.isDisplayEnabled()) {
     fps.calculateFPS(millis());
-    fps.displayFPS(artworkWidth/2, -artworkHeight/2);
+    fps.displayFPS(interface_color_buffer.width/2, -interface_color_buffer.height/2);
   }
 
   interface_color_buffer.end()
@@ -182,53 +226,48 @@ function drawInterface(){
 }
 
 function windowResized() {
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 }
 
 export function applyUIChanges(){
   updateArtworkSettings();
 
   // Update canvas size
-  scaleCanvasToFit(canvas, artworkHeight, artworkWidth);
+  scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
 
-  if (!loaded_user_image){
-    var image_path = imgFiles[floor(random(1000000000)%imgFiles.length)]
-    console.log('Loading new image: ',image_path)
-    loadImage(image_path, (loadedImage)=>{initializeCanvas(loadedImage)});
-  }
-  else{ // To restart the process if we already had a user image loaded but parameters change
-    initializeCanvas(img)
-  }
+  initializeCanvas(img)
+  setPixelsPerSideLabel()
 }
 
-function updateArtworkSettings() {
-  artworkWidth = parseInt(MainInputs['artworkWidth'].value);
-  artworkHeight = parseInt(MainInputs['artworkHeight'].value);
+export function updateArtworkSettings() {
+  artworkWidth = parseInt(SizeInputs['artworkWidth'].value);
+  artworkHeight = parseInt(SizeInputs['artworkHeight'].value);
+  setPixelsPerSideLabel()
 }
 
 export function flipSize(){
   // Set input seed to current seed
-  const oldArtworkWidth = MainInputs['artworkWidth'].value;
-  const oldArtworkHeight = MainInputs['artworkHeight'].value;
+  const oldArtworkWidth = SizeInputs['artworkWidth'].value;
+  const oldArtworkHeight = SizeInputs['artworkHeight'].value;
 
   artworkWidth = oldArtworkHeight;
   artworkHeight = oldArtworkWidth;
 
-  MainInputs['artworkWidth'].value = artworkWidth;
-  MainInputs['artworkHeight'].value = artworkHeight;
+  SizeInputs['artworkWidth'].value = artworkWidth;
+  SizeInputs['artworkHeight'].value = artworkHeight;
 
   // Update slider aswell by sending input event
   var event = new Event('input');
-  MainInputs['artworkWidth'].dispatchEvent(event);
-  MainInputs['artworkHeight'].dispatchEvent(event);
+  SizeInputs['artworkWidth'].dispatchEvent(event);
+  SizeInputs['artworkHeight'].dispatchEvent(event);
 
-  updateArtworkSettings();
+  applyUIChanges();
 }
 
 export function saveImage() {
   let color_buffer_otions = {
-    width: artworkWidth,
-    height: artworkHeight,
+    width: workingImageWidth,
+    height: workingImageHeight,
     textureFiltering: NEAREST,
     antialias: false,
     desity: 1,
@@ -239,38 +278,58 @@ export function saveImage() {
   let tmp_buffer = createFramebuffer(color_buffer_otions)
 
   tmp_buffer.begin();
-  image(color_buffer, 0-artworkWidth/2, 0-artworkHeight/2, artworkWidth, artworkHeight);
+  background(255,255,255);
+  image(color_buffer, 0-workingImageWidth/2, 0-workingImageHeight/2, workingImageWidth, workingImageHeight);
   tmp_buffer.end()
-  let filename =  `${artwork_seed}.png`
+  let filename =  recorder.defaultBaseFilename(new Date(Date.now())) + '_' + create_save_filename_suffix() + ".png"
   // Save the image
   saveCanvas(tmp_buffer, filename, 'png');
 }
 
-export function load_user_file(user_file){
+export function load_user_file(user_file, file_name){
   const fileExtension = getFileExtension(user_file);
   console.log('fileExtension', fileExtension)
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
-    img = load_video(user_file);
-    user_file_is_video = true;
+    load_video(user_file, (video) => {
+      img = video
+      initializeCanvas(img)
+      setUseInputFile(true);
+    });
   }
   else {
+    console.log('Loading Image')
     loadImage(user_file,
       (loadedImage)=>{
         img = loadedImage;
         initializeCanvas(loadedImage)
+        setUseInputFile(true);
       },
-      () => { image_loaded_successfuly = false; loaded_user_image = true; }
+      () => { image_loaded_successfuly = false; loaded_user_image = true; setUseInputFile(false);}
     );
   }
+  current_image_path = file_name;
   loaded_user_image = true;
   image_loaded_successfuly = true;
 }
 
-function load_video(video_path) {
-  console.log('video_path', video_path);
-  let video = createVideo(video_path);
-  // video.size(400, 400);
+function loadFrames(animationsFramesPathsDict, callback) {
+  console.log('Loading all spritesheets');
+  let loadedImages = [];
+
+  for (let key in animationsFramesPathsDict) {
+    let spritesheetDict = {'id': key, 'img': loadImage(animationsFramesPathsDict[key])};
+    loadedImages.push(spritesheetDict)
+  }
+  callback(loadedImages);
+
+  return loadedImages;
+}
+
+function load_video(video_path, callbak) {
+  let video = createVideo(video_path, () => {
+      callbak(video)
+  });
   video.volume(0);
   video.loop();
   video.hide();
@@ -301,6 +360,97 @@ function display_image_error_message(){
   else {
     text("Failed to load default image. \n Upload an image with the 'Load Image' button", 0, 0)
   }
+}
+
+export function setUseInputFile(newUseInputFile) {
+  let oldUseInputFile = useInputFile;
+  useInputFile = newUseInputFile;
+  if (!useInputFile) {
+    camera = create_camera_input();
+  }
+  else {
+    delete_camera_input(camera);
+  }
+  return oldUseInputFile;
+
+}
+
+export function getUseInputFile() {
+  return useInputFile;
+
+}
+
+export function setUseInputFileResolution(newUseInputFileRes) {
+  let oldUseInputFileRes = useInputFileResolution;
+  useInputFileResolution = newUseInputFileRes;
+  applyUIChanges();
+  return oldUseInputFileRes;
+
+}
+
+export function getUseInputFileResolution() {
+  return useInputFileResolution;
+
+}
+
+export function setInputFileResolutionScale(newInputFileResScale) {
+  let oldInputFileResScale = inputFileResolutionScale;
+  inputFileResolutionScale = newInputFileResScale;
+  setInputFileSizeLabel();
+  setPixelsPerSideLabel();
+  return oldInputFileResScale;
+
+}
+
+export function getInputFileResolutionScale() {
+  return inputFileResolutionScale;
+
+}
+
+function setInputFileSizeLabel() {
+  let w = Math.round(img.width * inputFileResolutionScale);
+  let h = Math.round(img.height * inputFileResolutionScale);
+  SizeInputs['inputFileSizeLabel'].innerHTML = w + " x " + h;
+}
+
+function setPixelsPerSideLabel(){
+  let w = artworkWidth;
+  let h = artworkHeight;
+  if (getUseInputFileResolution()) {
+    w = Math.round(img.width * inputFileResolutionScale);
+    h = Math.round(img.height * inputFileResolutionScale);
+  }
+
+  let w_pixels = parseFloat(w/pixelCam.getPixelSize()).toFixed(2);
+  let h_pixels = parseFloat(h/pixelCam.getPixelSize()).toFixed(2);
+  SizeInputs['pixelsPerSide'].innerHTML = "Pixels per side: " + w_pixels + " x " + h_pixels;
+}
+
+function create_camera_input() {
+  let cam = createCapture(VIDEO);
+  cam.size(artworkWidth, artworkHeight);
+  cam.hide();
+  return cam
+}
+
+function delete_camera_input(cam) {
+  if(cam!== undefined && cam !== null) {
+    cam.remove();
+  }
+  return 
+}
+
+function create_save_filename_suffix() {
+  let filename = '';
+  if (getUseInputFile()) {
+    filename += current_image_path.replace(/\.[^/.]+$/, "");
+  }
+  else {
+    filename += 'cam'
+  }
+  let pixel_size = pixelCam.getPixelSize()
+  let save_filename = filename + `_ps_${pixel_size}`;
+  return save_filename
 }
 
 window.preload = preload

@@ -6,6 +6,9 @@
 *.webp
 !/img/*.jpg
 
+# Dont ignore mockup animations
+!img/mockup/*.png
+
 # Ignore Combine24objects.json
 Combine24objects*.json
 
@@ -13,12 +16,17 @@ Combine24objects*.json
 *.avi
 *.mp4
 *.webm
+img/Videitos Mobil
+
 
 # Ignore all exports folder
 exports/*
 
 # Ignore .DS_Store
 .DS_Store
+
+# Ignore zips
+*.zip
 
 # Ignore VSCode settings
 .vscode/*
