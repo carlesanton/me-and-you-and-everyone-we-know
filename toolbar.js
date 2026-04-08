@@ -163,41 +163,42 @@ function intialize_toolbar(){
 
     // Size Settings UI
     var SizeInputs = createSizeSettingsCard();
+    SizeInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(SizeInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
 
     elements_dict['sizeInputs'] = SizeInputs;
 
     // Input Settings
     var InputSettings = createInputCard()
+    InputSettings['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(InputSettings['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
 
     elements_dict['inputSettings'] = InputSettings;
 
     // Pixel Cam
     var pixelCamInputs = pixelCam.createPixelCamSettings()
+    pixelCamInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(pixelCamInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
     elements_dict['pixelCamInputs'] = pixelCamInputs;
 
     // Image Adjustment
     var imageAdjustInputs = imageAdjustment.createImageAdjustmentSettings()
+    imageAdjustInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
+    console.log(imageAdjustInputs['main-toolbar'])
     toolbar.appendChild(imageAdjustInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
     elements_dict['imageAdjustInputs'] = pixelCamInputs;
-
-    // FPS
-    var FPSInputs = fps.createFPSSettingsCard();
-    toolbar.appendChild(FPSInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
-    elements_dict['fpsInputs'] = pixelCamInputs;
 
     // Recorder UI
     var recorderInputs = recorder.createSettingsCard();
+    recorderInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(recorderInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
     elements_dict['recorderInputs'] = recorderInputs;
+
+    // FPS
+    var FPSInputs = fps.createFPSSettingsCard();
+    FPSInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
+    toolbar.appendChild(FPSInputs['main-toolbar']);
+    elements_dict['fpsInputs'] = pixelCamInputs;
     
     elements_dict['toolbar'] = toolbar;
     // toolbar.style.display = "none" // to hide toolbar
