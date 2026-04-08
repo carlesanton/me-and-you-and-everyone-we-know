@@ -147,7 +147,7 @@ function createInputCard() {
     const loadImage = create_input_file_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
 
     cardBody.appendChild(useCamera);
-    cardBody.appendChild(document.createElement('br'));
+    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(loadImage);
 
     elements_dict['main-toolbar'] = card;
