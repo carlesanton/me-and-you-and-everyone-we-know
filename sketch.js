@@ -34,10 +34,11 @@ export let artwork_seed; // -1 used for random seeds, if set to a positive integ
 let loaded_user_image = false;
 const videoFormats = ['mp4']
 let image_loaded_successfuly = false;
+let initialized = false;
 // let useInputFile = true;
-let useInputFile = false;
+let useInputFile = true;
 let useInputFileResolution = false;
-let inputFileResolutionScale = 4.;
+let inputFileResolutionScale = 2.;
 let prevPixelSize;
 
 const pixel_density = 1;
@@ -81,12 +82,29 @@ function preload() {
   artwork_seed = prepareP5Js(defaultArtworkSeed); // Order is important! First setup randomness then prepare the token
   myFont = loadFont('./fonts/PixelifySans-Medium.ttf');
   current_image_path = imgFile
-  console.log('Loaded image: ', current_image_path)
-  img = loadImage(
-    current_image_path,
-    () => { image_loaded_successfuly = true; },
-    () => { image_loaded_successfuly = false; }
-  )
+  console.log('Loading file: ', current_image_path)
+
+  let s = current_image_path.split('.')
+  const fileExtension = s[s.length-1];
+  console.log('fileExtension', fileExtension)
+
+  if (videoFormats.includes(fileExtension)) {
+    console.log('Loading video')
+    img = load_video(
+      current_image_path, 
+      () => { image_loaded_successfuly = true; console.log('Flaging successful')},
+    );
+  }
+  else {
+    console.log('Loading Image')
+    img = loadImage(
+      current_image_path,
+      () => { image_loaded_successfuly = true; },
+      () => { image_loaded_successfuly = false; }
+    )
+  }
+
+  loaded_user_image = true;
 
   pixelCam = new PixelCam();
   imageAdjustment = new ImageAdjustment();
@@ -105,7 +123,8 @@ function setup() {
   recorder.setSketchFPSMethod(() => {return fps.getFPS()})
   recorder.setCaptureSingleFrameMethod(() => {saveImage()})
 
-  updateArtworkSettings()
+  artworkWidth = parseInt(SizeInputs['artworkWidth'].value);
+  artworkHeight = parseInt(SizeInputs['artworkHeight'].value);
 
   // Create Canvas
   canvas = createCanvas(artworkWidth, artworkHeight, WEBGL);
@@ -146,10 +165,15 @@ function setup() {
   fps.setFillColor([255, 10, 10]);
 
   if (image_loaded_successfuly){
-    initializeCanvas(img)
-    setInputFileSizeLabel()
-    setPixelsPerSideLabel()
+    initializeProject();
+    initialized = true;
   }
+}
+
+function initializeProject() {
+  initializeCanvas(img);
+  setInputFileSizeLabel();
+  setPixelsPerSideLabel();
 }
 
 function initializeCanvas(input_image){
@@ -182,6 +206,11 @@ function initializeCanvas(input_image){
 }
 
 function draw() {
+  if (image_loaded_successfuly && !initialized) { // Initialize here if 
+    initializeProject();
+    initialized = true;
+    return;
+  }
   if (image_loaded_successfuly){
     draw_steps()
   }
@@ -192,6 +221,9 @@ function draw() {
   if (prevPixelSize != pixelCam.getPixelSize()) {
     setPixelsPerSideLabel()
     prevPixelSize = pixelCam.getPixelSize()
+  }
+  if (frameCount%fps.getFPS() == 0 || frameCount == 1) { // Ensure canvas is fitted on screen
+    scaleCanvasToFit(canvas, workingImageHeight, workingImageWidth);
   }
 
   drawInterface()
@@ -333,12 +365,15 @@ function loadFrames(animationsFramesPathsDict, callback) {
 }
 
 function load_video(video_path, callbak) {
-  let video = createVideo(video_path, () => {
-      callbak(video)
-  });
-  video.volume(0);
-  video.loop();
-  video.hide();
+  let video = createVideo(video_path);
+  video.elt.onloadedmetadata = () => {
+    console.log("Video metadata loaded!");
+    video.volume(0);
+    video.loop();
+    video.hide();
+
+    callbak(video);
+  };
   return video;
 }
 
