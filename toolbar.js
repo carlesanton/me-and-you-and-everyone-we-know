@@ -35,7 +35,7 @@ function createSizeSettingsCard() {
     const cardBody = card.getElementsByClassName('collapse-content')[0]
 
 
-    const useInputFileRes = createToggleButton('Use input file resolution', (a) => {
+    const useInputFileRes = createToggleButton('Use input resolution', (a) => {
         let checked = a.target.checked;
         setUseInputFileResolution(checked);
         if (checked) { // Hide elements if needed
@@ -71,7 +71,7 @@ function createSizeSettingsCard() {
         'artworkWidth',
         'Width',
         defaultArtworkWidth,
-        0,
+        10,
         4000,
         updateArtworkSettings,
     );
@@ -84,7 +84,7 @@ function createSizeSettingsCard() {
         'artworkHeight',
         'Height',
         defaultArtworkHeight,
-        0,
+        10,
         4000,
         updateArtworkSettings,
     );
@@ -94,7 +94,7 @@ function createSizeSettingsCard() {
     elements_dict['pixelsPerSide'] = pixelsPerSide.getElementsByTagName('text')[0];
 
     // Buttons
-    const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
+    const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); }, '', 'sm');
 
     cardBody.appendChild(useInputFileRes);
     cardBody.appendChild(createSmallBreak('10px'));
@@ -104,9 +104,7 @@ function createSizeSettingsCard() {
 
     cardBody.appendChild(create_subtitle());
     cardBody.appendChild(width);
-    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(changeOrientation);
-    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(height);
     
     cardBody.appendChild(create_subtitle());
