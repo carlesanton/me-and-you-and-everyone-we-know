@@ -17,6 +17,7 @@ Combine24objects*.json
 *.mp4
 *.webm
 img/Videitos Mobil
+!img/videos/cosmos/flower_bloom.mp4
 
 
 # Ignore all exports folder

@@ -37,7 +37,7 @@ let image_loaded_successfuly = false;
 let initialized = false;
 // let useInputFile = true;
 let useInputFile = true;
-let useInputFileResolution = false;
+let useInputFileResolution = true;
 let inputFileResolutionScale = 2.;
 let prevPixelSize;
 
@@ -49,7 +49,7 @@ let myFont;
 let color_buffer;
 let interface_color_buffer;
 
-const imgFile = 'img/waterfall.jpg'
+const imgFile = 'img/videos/cosmos/flower_bloom.mp4'
 
 const animationsFramesPathsDict = {
   0: 'img/mockup/0.png',
