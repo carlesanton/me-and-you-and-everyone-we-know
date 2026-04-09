@@ -35,7 +35,7 @@ function createSizeSettingsCard() {
     const cardBody = card.getElementsByClassName('collapse-content')[0]
 
 
-    const useInputFileRes = createToggleButton('Use input file resolution', (a) => {
+    const useInputFileRes = createToggleButton('Use input resolution', (a) => {
         let checked = a.target.checked;
         setUseInputFileResolution(checked);
         if (checked) { // Hide elements if needed
@@ -71,7 +71,7 @@ function createSizeSettingsCard() {
         'artworkWidth',
         'Width',
         defaultArtworkWidth,
-        0,
+        10,
         4000,
         updateArtworkSettings,
     );
@@ -84,7 +84,7 @@ function createSizeSettingsCard() {
         'artworkHeight',
         'Height',
         defaultArtworkHeight,
-        0,
+        10,
         4000,
         updateArtworkSettings,
     );
@@ -94,7 +94,7 @@ function createSizeSettingsCard() {
     elements_dict['pixelsPerSide'] = pixelsPerSide.getElementsByTagName('text')[0];
 
     // Buttons
-    const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); });
+    const applyChangesButton = create_button('Apply Changes', () => { applyUIChanges(); }, '', 'sm');
 
     cardBody.appendChild(useInputFileRes);
     cardBody.appendChild(createSmallBreak('10px'));
@@ -104,9 +104,7 @@ function createSizeSettingsCard() {
 
     cardBody.appendChild(create_subtitle());
     cardBody.appendChild(width);
-    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(changeOrientation);
-    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(height);
     
     cardBody.appendChild(create_subtitle());
@@ -149,7 +147,7 @@ function createInputCard() {
     const loadImage = create_input_file_button(load_user_file, 'Load Image', 'No file chosen', 'Loaded Image: ');
 
     cardBody.appendChild(useCamera);
-    cardBody.appendChild(document.createElement('br'));
+    cardBody.appendChild(createSmallBreak('10px'));
     cardBody.appendChild(loadImage);
 
     elements_dict['main-toolbar'] = card;
@@ -163,41 +161,39 @@ function intialize_toolbar(){
 
     // Size Settings UI
     var SizeInputs = createSizeSettingsCard();
+    SizeInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(SizeInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
-
     elements_dict['sizeInputs'] = SizeInputs;
 
     // Input Settings
     var InputSettings = createInputCard()
+    InputSettings['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(InputSettings['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
-
     elements_dict['inputSettings'] = InputSettings;
 
     // Pixel Cam
     var pixelCamInputs = pixelCam.createPixelCamSettings()
+    pixelCamInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(pixelCamInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
     elements_dict['pixelCamInputs'] = pixelCamInputs;
 
     // Image Adjustment
     var imageAdjustInputs = imageAdjustment.createImageAdjustmentSettings()
+    imageAdjustInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(imageAdjustInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
-    elements_dict['imageAdjustInputs'] = pixelCamInputs;
-
-    // FPS
-    var FPSInputs = fps.createFPSSettingsCard();
-    toolbar.appendChild(FPSInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
-    elements_dict['fpsInputs'] = pixelCamInputs;
+    elements_dict['imageAdjustInputs'] = imageAdjustInputs;
 
     // Recorder UI
     var recorderInputs = recorder.createSettingsCard();
+    recorderInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(recorderInputs['main-toolbar']);
-    toolbar.appendChild(document.createElement('br'));
     elements_dict['recorderInputs'] = recorderInputs;
+
+    // FPS
+    var FPSInputs = fps.createFPSSettingsCard();
+    FPSInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
+    toolbar.appendChild(FPSInputs['main-toolbar']);
+    elements_dict['fpsInputs'] = FPSInputs;
     
     elements_dict['toolbar'] = toolbar;
     // toolbar.style.display = "none" // to hide toolbar

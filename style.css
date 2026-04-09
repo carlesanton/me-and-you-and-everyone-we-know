@@ -39,3 +39,141 @@ canvas {
     padding: 0;
     margin: auto;
 }
+
+:root:has(input.theme-controller[value=customtheme]:checked),[data-theme="customtheme"] {
+    color-scheme: light;
+    --b1: 254 12% 10%; /* Toggle and sliders main color */ /* Primary */
+    --n: var(--b1); /* Button BG */
+    --p: 254 12% 90%; /* Slider BG and Toggle secondary color */ /* Secondary */
+
+    --nc: 0 0% 95%; /* Button Text */
+
+    --b2: 262 3% 95%; /* Card BG Color */
+    --b3: 0 0% 0%;
+    --bc: 0 12% 1%; /* Text Color */
+
+    --s: 0 0% 93%; /* Image BG */
+
+    /* Square it*/
+    --rounded-box: 0;
+    --rounded-btn: 0;
+    --rounded-badge: 0;
+    --tab-radius: 0;
+
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+}
+/* AUTOMATIC DARK MODE OVERRIDE */
+@media (prefers-color-scheme: dark) {
+    [data-theme="customtheme"] {
+        color-scheme: dark;
+        --b1: 254 12% 90%; /* Toggle and sliders main color */ /* Primary */
+        --n: var(--b1); /* Button BG */
+        --p: 254 12% 10%; /* Slider BG and Toggle secondary color */ /* Secondary */
+
+        --nc: 254 12% 10%; /* Button Text */
+
+        --b2: 0 0% 5%; /* Card BG Color */
+        --b3: 0 0% 0%;
+        --bc: 0 0% 95%; /* Text Color */
+
+        --s: 0 0% 0%; /* Image BG */
+
+        /* Square it*/
+        --rounded-box: 0;
+        --rounded-btn: 0;
+        --rounded-badge: 0;
+        --tab-radius: 0;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+
+        .file-input {
+            color: var(--b1)
+        }
+    }
+}
+:root, [data-theme] {
+    background-color: hsl(var(--b2) / var(--tw-bg-opacity, 1));
+    color: hsl(var(--bc) / var(--tw-text-opacity, 1));
+}
+.toggle {
+    flex-shrink: 0;
+    --tglbg: hsl(var(--p));
+    background-color: hsl(var(--b1));
+}
+.toggle:checked {
+    flex-shrink: 0;
+    --tglbg: hsl(var(--b1));
+    background-color: hsl(var(--p));
+}
+.range {
+    --range-shdw: var(--p);
+}
+.btn-neutral {
+    --tw-border-opacity: 1;
+    border-color: hsl(var(--n) / var(--tw-border-opacity));
+    --tw-bg-opacity: 1;
+    background-color: hsl(var(--n));
+    --tw-text-opacity: 1;
+    color: hsl(var(--nc) / var(--tw-text-opacity));
+    outline-color: hsl(var(--n) / 1);
+}
+.input {
+    background-color: hsl(var(--p) / var(--tw-bg-opacity));
+}
+.text-base {
+    color: hsl(var(--b1) / 1);
+}
+.btn {
+    border: 1px solid currentColor; /* Or a specific color */
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1); /* Brutalist hard shadow */
+}
+/* To center the input numbers without taking into account the arrows*/
+input[type="number"]::-webkit-inner-spin-button {
+  position: absolute;
+  right: 2px;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* COLORS TEST*/
+
+/*
+PURPLE
+    --b1: 254 83% 64%;
+    --n: var(--b1);
+    --p: 254 50% 90%;
+
+RED
+    --b1: 7 86.5% 60%; 
+    --n: var(--b1); 
+    --p: 7 50% 90%;
+
+CYAN
+    --b1: 180 60% 45%; 
+    --n: var(--b1); 
+    --p: 180 30% 85%;
+
+ORANGE - Only for dark?
+    --b1:24 95% 53%;
+    --n: var(--b1);
+    --p: 24 50% 86%;
+
+BLUE
+    --b1:221 83% 53%; 
+    --n: var(--b1);
+    --p: 221 70% 90%; 
+
+INDIGO
+    --b1: 240 60% 59.8%;
+    --n: var(--b1);
+    --p: 240 50% 90%;
+
+GREEN
+    --b1: 142 80% 35%;
+    --n: var(--b1);
+    --p: 110 50% 85%; 
+
+BW
+    --b1: 254 12% 10%;
+    --n: var(--b1);
+    --p: 254 12% 90%;
+*/
