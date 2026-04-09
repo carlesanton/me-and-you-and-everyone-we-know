@@ -163,14 +163,12 @@ function intialize_toolbar(){
     var SizeInputs = createSizeSettingsCard();
     SizeInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(SizeInputs['main-toolbar']);
-
     elements_dict['sizeInputs'] = SizeInputs;
 
     // Input Settings
     var InputSettings = createInputCard()
     InputSettings['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(InputSettings['main-toolbar']);
-
     elements_dict['inputSettings'] = InputSettings;
 
     // Pixel Cam
@@ -182,9 +180,8 @@ function intialize_toolbar(){
     // Image Adjustment
     var imageAdjustInputs = imageAdjustment.createImageAdjustmentSettings()
     imageAdjustInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
-    console.log(imageAdjustInputs['main-toolbar'])
     toolbar.appendChild(imageAdjustInputs['main-toolbar']);
-    elements_dict['imageAdjustInputs'] = pixelCamInputs;
+    elements_dict['imageAdjustInputs'] = imageAdjustInputs;
 
     // Recorder UI
     var recorderInputs = recorder.createSettingsCard();
@@ -196,7 +193,7 @@ function intialize_toolbar(){
     var FPSInputs = fps.createFPSSettingsCard();
     FPSInputs['main-toolbar'].querySelector('input[type="checkbox"]').checked = false
     toolbar.appendChild(FPSInputs['main-toolbar']);
-    elements_dict['fpsInputs'] = pixelCamInputs;
+    elements_dict['fpsInputs'] = FPSInputs;
     
     elements_dict['toolbar'] = toolbar;
     // toolbar.style.display = "none" // to hide toolbar
