@@ -48,11 +48,11 @@ canvas {
 
     --nc: 0 0% 95%; /* Button Text */
 
-    --b2: 0 0% 95%; /* Card BG Color */
+    --b2: 262 3% 95%; /* Card BG Color */
     --b3: 0 0% 0%;
     --bc: 0 12% 1%; /* Text Color */
 
-    --s: 0 5% 95%; /* Image BG */
+    --s: 0 0% 93%; /* Image BG */
 
     /* Square it*/
     --rounded-box: 0;
@@ -72,11 +72,11 @@ canvas {
 
         --nc: 0 0% 95%; /* Button Text */
 
-        --b2: 0 12% 1%; /* Card BG Color */
+        --b2: 0 0% 5%; /* Card BG Color */
         --b3: 0 0% 0%;
         --bc: 0 0% 95%; /* Text Color */
 
-        --s: 0 5% 5%; /* Image BG */
+        --s: 0 0% 0%; /* Image BG */
 
         /* Square it*/
         --rounded-box: 0;
