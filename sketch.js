@@ -369,7 +369,7 @@ function loadFrames(animationsFramesPathsDict, callback) {
 function load_video(video_path, callbak) {
   let video = createVideo(video_path);
   video.elt.onloadedmetadata = () => {
-    console.log("Video metadata loaded!");
+    console.log("Video metadata loaded.");
     video.volume(0);
     video.loop();
     video.hide();
