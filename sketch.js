@@ -92,7 +92,7 @@ function preload() {
     console.log('Loading video')
     img = load_video(
       current_image_path, 
-      () => { image_loaded_successfuly = true; console.log('Flaging successful')},
+      () => { image_loaded_successfuly = true;},
     );
   }
   else {
