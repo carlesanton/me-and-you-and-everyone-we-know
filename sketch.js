@@ -211,6 +211,8 @@ function draw() {
     initialized = true;
     return;
   }
+  if (!initialized) {return;}
+
   if (image_loaded_successfuly){
     draw_steps()
   }
