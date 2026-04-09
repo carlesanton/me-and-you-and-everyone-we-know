@@ -42,9 +42,9 @@ canvas {
 
 :root:has(input.theme-controller[value=customtheme]:checked),[data-theme="customtheme"] {
     color-scheme: light;
-    --b1: 254 83% 64%; /* Toggle and sliders main color */ /* Primary */
+    --b1: 254 12% 10%; /* Toggle and sliders main color */ /* Primary */
     --n: var(--b1); /* Button BG */
-    --p: 254 50% 90%; /* Slider BG and Toggle secondary color */ /* Secondary */
+    --p: 254 12% 90%; /* Slider BG and Toggle secondary color */ /* Secondary */
 
     --nc: 0 0% 95%; /* Button Text */
 
@@ -66,11 +66,11 @@ canvas {
 @media (prefers-color-scheme: dark) {
     [data-theme="customtheme"] {
         color-scheme: dark;
-        --b1: 254 83% 64%; /* Toggle and sliders main color */ /* Primary */
+        --b1: 254 12% 90%; /* Toggle and sliders main color */ /* Primary */
         --n: var(--b1); /* Button BG */
-        --p: 360 20% 95%; /* Slider BG and Toggle secondary color */ /* Secondary */
+        --p: 254 12% 10%; /* Slider BG and Toggle secondary color */ /* Secondary */
 
-        --nc: 0 0% 95%; /* Button Text */
+        --nc: 254 12% 10%; /* Button Text */
 
         --b2: 0 0% 5%; /* Card BG Color */
         --b3: 0 0% 0%;
@@ -84,6 +84,10 @@ canvas {
         --rounded-badge: 0;
         --tab-radius: 0;
         font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+
+        .file-input {
+            color: var(--b1)
+        }
     }
 }
 :root, [data-theme] {
@@ -129,3 +133,47 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 100%;
   cursor: pointer;
 }
+
+/* COLORS TEST*/
+
+/*
+PURPLE
+    --b1: 254 83% 64%;
+    --n: var(--b1);
+    --p: 254 50% 90%;
+
+RED
+    --b1: 7 86.5% 60%; 
+    --n: var(--b1); 
+    --p: 7 50% 90%;
+
+CYAN
+    --b1: 180 60% 45%; 
+    --n: var(--b1); 
+    --p: 180 30% 85%;
+
+ORANGE - Only for dark?
+    --b1:24 95% 53%;
+    --n: var(--b1);
+    --p: 24 50% 86%;
+
+BLUE
+    --b1:221 83% 53%; 
+    --n: var(--b1);
+    --p: 221 70% 90%; 
+
+INDIGO
+    --b1: 240 60% 59.8%;
+    --n: var(--b1);
+    --p: 240 50% 90%;
+
+GREEN
+    --b1: 142 80% 35%;
+    --n: var(--b1);
+    --p: 110 50% 85%; 
+
+BW
+    --b1: 254 12% 10%;
+    --n: var(--b1);
+    --p: 254 12% 90%;
+*/
