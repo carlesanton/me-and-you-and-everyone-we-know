@@ -52,16 +52,16 @@ let interface_color_buffer;
 const imgFile = 'img/videos/cosmos/flower_bloom.mp4'
 
 const animationsFramesPathsDict = {
-  0: 'img/mockup/0.png',
-  1: 'img/mockup/1.png',
-  2: 'img/mockup/2.png',
-  3: 'img/mockup/3.png',
-  4: 'img/mockup/4.png',
-  5: 'img/mockup/5.png',
-  6: 'img/mockup/6.png',
-  7: 'img/mockup/7.png',
-  8: 'img/mockup/8.png',
-  9: 'img/mockup/9.png',
+  0: {'img': 'img/mockup/0.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  1: {'img': 'img/mockup/1.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  2: {'img': 'img/mockup/2.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  3: {'img': 'img/mockup/3.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  4: {'img': 'img/mockup/4.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  5: {'img': 'img/mockup/5.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  6: {'img': 'img/mockup/6.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  7: {'img': 'img/mockup/7.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  8: {'img': 'img/mockup/8.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
+  9: {'img': 'img/mockup/9.png', 'bg_color': [1.0,1.0,1.0], 'glyph_color': [0.0,0.0,0.0]},
 }
 
 let current_image_path;
@@ -86,7 +86,7 @@ function preload() {
 
   let s = current_image_path.split('.')
   const fileExtension = s[s.length-1];
-  console.log('fileExtension', fileExtension)
+  console.debug('fileExtension', fileExtension)
 
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
@@ -358,7 +358,12 @@ function loadFrames(animationsFramesPathsDict, callback) {
   let loadedImages = [];
 
   for (let key in animationsFramesPathsDict) {
-    let spritesheetDict = {'id': key, 'img': loadImage(animationsFramesPathsDict[key])};
+    let spritesheetDict = {
+      'id': key,
+      'img': loadImage(animationsFramesPathsDict[key]['img']),
+      'bg_color': animationsFramesPathsDict[key]['bg_color'],
+      'glyph_color': animationsFramesPathsDict[key]['glyph_color'],
+    };
     loadedImages.push(spritesheetDict)
   }
   callback(loadedImages);
