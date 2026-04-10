@@ -5,6 +5,7 @@
 *.psd
 *.webp
 !/img/*.jpg
+!favicon.png
 
 # Dont ignore mockup animations
 !img/mockup/*.png
