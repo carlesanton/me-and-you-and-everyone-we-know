@@ -86,7 +86,7 @@ function preload() {
 
   let s = current_image_path.split('.')
   const fileExtension = s[s.length-1];
-  console.log('fileExtension', fileExtension)
+  console.debug('fileExtension', fileExtension)
 
   if (videoFormats.includes(fileExtension)) {
     console.log('Loading video')
