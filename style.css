@@ -68,7 +68,7 @@ canvas {
         color-scheme: dark;
         --b1: 254 12% 90%; /* Toggle and sliders main color */ /* Primary */
         --n: var(--b1); /* Button BG */
-        --p: 254 12% 10%; /* Slider BG and Toggle secondary color */ /* Secondary */
+        --p: 254 12% 20%; /* Slider BG and Toggle secondary color */ /* Secondary */
 
         --nc: 254 12% 10%; /* Button Text */
 
@@ -119,13 +119,62 @@ canvas {
 .input {
     background-color: hsl(var(--p) / var(--tw-bg-opacity));
 }
+.spritesheet-item {
+    border-color: hsl(var(--bc) / 0.2);
+}
 .text-base {
     color: hsl(var(--b1) / 1);
 }
 .btn {
-    border: 1px solid currentColor; /* Or a specific color */
-    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1); /* Brutalist hard shadow */
+    border: 1px solid;
+    border-color: hsl(var(--bc) / var(--tw-border-opacity, 1));
+    box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
 }
+
+.custom-color-picker,
+.custom-color-picker *:not(.pcr-current-color):not(.pcr-picker),
+.pickr .pcr-button::after,
+.pickr .pcr-button::before,
+.pcr-app .pcr-swatches>button::after {
+    border-radius: 0 !important;
+    border: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+}
+
+.pickr .pcr-button,
+.pcr-app .pcr-swatches > button::before,
+.pickr .pcr-button::before,
+.pcr-app[data-theme='nano'] .pcr-selection .pcr-color-palette .pcr-palette::before,
+.pcr-app[data-theme='nano'] .pcr-selection .pcr-color-preview .pcr-current-color::before {
+    background: none !important;
+}
+
+.pcr-app .pcr-interaction .pcr-type.active {
+    color: var(--n);
+    background: var(--ns);
+    border: solid !important;
+    border-width: 1px !important;
+    border-color: hsl(var(--bc) / 0.2) !important;
+}
+
+.pcr-app .pcr-interaction .pcr-result {
+    color: var(--b1);
+    background: hsl(var(--p) / 0.2);
+    border: solid;
+    border-width: 1px;
+    border-color: hsl(var(--bc) / 0.2);
+}
+
+.pickr .pcr-button:focus,
+.pickr .pcr-button.pcr-active,
+.custom-color-picker input:focus,
+.custom-color-picker input.pcr-active,
+.custom-color-picker button:focus,
+.custom-color-picker button.pcr-active {
+    /* Only keep the colored border, remove the white inner ring */
+    box-shadow: 0 0 0 3px var(--pcr-color) !important;
+}
+
 /* To center the input numbers without taking into account the arrows*/
 input[type="number"]::-webkit-inner-spin-button {
   position: absolute;
